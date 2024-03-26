@@ -11,8 +11,8 @@ public interface EmployeeMapper {
     /**
      * 根据用户名查询员工
      *
-     * @param username
-     * @return
+     * @param username 员工用户名
+     * @return 返回员工实体类
      */
     @Select("select * from employee where username = #{username}")
     Employee getByUsername(String username);

@@ -19,11 +19,11 @@ public class GlobalExceptionHandler {
     /**
      * 捕获业务异常
      *
-     * @param ex
-     * @return
+     * @param ex 异常
+     * @return 返回统一响应结果
      */
     @ExceptionHandler
-    public Result exceptionHandler(BaseException ex) {
+    public Result<String> exceptionHandler(BaseException ex) {
         log.error("异常信息：{}", ex.getMessage());
         return Result.error(ex.getMessage());
     }
@@ -31,11 +31,11 @@ public class GlobalExceptionHandler {
     /**
      * 处理SQL异常
      *
-     * @param ex
-     * @return
+     * @param ex 异常
+     * @return 返回统一响应结果
      */
     @ExceptionHandler
-    public Result exceptionHandler(SQLIntegrityConstraintViolationException ex) {
+    public Result<String> exceptionHandler(SQLIntegrityConstraintViolationException ex) {
         //Duplicate entry '' for key ''
         String message = ex.getMessage();
         if (message.contains("Duplicate entry")) {
