@@ -44,7 +44,7 @@ public class WebMvcConfiguration implements WebMvcConfigurer {
      * @return 返回OpenAPI对象
      */
     @Bean
-    public OpenAPI publicApi(Environment environment) {
+    public OpenAPI publicApi(/*Environment environment*/) {
         return new OpenAPI()
                 //.servers(serverList())
                 .info(new Info()
