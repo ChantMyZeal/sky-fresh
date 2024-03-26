@@ -57,7 +57,7 @@ public class WebMvcConfiguration implements WebMvcConfigurer {
     }
 
     /**
-     * 设置静态资源映射，可省去此方法，因为implements WebMvcConfigurer可以自动映射
+     * 设置静态资源映射，可省去此方法，因为implements WebMvcConfigurer可以自动配置路径映射
      *
      * @param registry 注册类作为参数
      */
