@@ -43,9 +43,10 @@ public class CommonController {
             //原始文件名
             String originalFilename = file.getOriginalFilename();
             //截取原始文件名的后缀
+            assert originalFilename != null : "originalFilename == null";//断言原文件名不为空，否则在日志中输出错误信息
             String extension = originalFilename.substring(originalFilename.lastIndexOf("."));
             //利用UUID构造新的不重复文件名
-            String objectName = UUID.randomUUID().toString() + extension;
+            String objectName = UUID.randomUUID() + extension;
             //获取文件的请求路径
             String filePath = aliOssUtil.upload(file.getBytes(), objectName);
             return Result.success(filePath);

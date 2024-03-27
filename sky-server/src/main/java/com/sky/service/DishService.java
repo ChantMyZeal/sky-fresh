@@ -9,6 +9,6 @@ public interface DishService {
      *
      * @param dishDTO 菜品DTO
      */
-    public void saveWithFlavor(DishDTO dishDTO);
+    void saveWithFlavor(DishDTO dishDTO);
 
 }

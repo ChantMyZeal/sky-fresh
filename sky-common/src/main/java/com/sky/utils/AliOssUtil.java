@@ -7,6 +7,7 @@ import com.aliyun.oss.OSSException;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.extern.slf4j.Slf4j;
+
 import java.io.ByteArrayInputStream;
 
 @Data
@@ -22,7 +23,7 @@ public class AliOssUtil {
     /**
      * 文件上传
      *
-     * @param bytes 文件对象转换成的byte数组
+     * @param bytes      文件对象转换成的byte数组
      * @param objectName 唯一文件名
      * @return 返回拼接好的文件路径
      */
@@ -61,7 +62,7 @@ public class AliOssUtil {
                 .append("/")
                 .append(objectName);
 
-        log.info("文件上传到:{}", stringBuilder.toString());
+        log.info("文件上传到:{}", stringBuilder);
 
         return stringBuilder.toString();
     }

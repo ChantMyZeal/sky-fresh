@@ -1,6 +1,5 @@
 package com.sky.service.impl;
 
-import com.fasterxml.jackson.dataformat.yaml.util.StringQuotingChecker;
 import com.sky.dto.DishDTO;
 import com.sky.entity.Dish;
 import com.sky.entity.DishFlavor;
@@ -44,9 +43,7 @@ public class DishServiceImpl implements DishService {
 
         List<DishFlavor> flavors = dishDTO.getFlavors();
         if (flavors != null && !flavors.isEmpty()) {
-            flavors.forEach(dishFlavor -> {
-                dishFlavor.setDishId(dishId);
-            });
+            flavors.forEach(dishFlavor -> dishFlavor.setDishId(dishId));
             //向口味表插入N条数据
             dishFlavorMapper.insertBatch(flavors);
         }
