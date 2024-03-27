@@ -94,12 +94,10 @@ public class EmployeeServiceImpl implements EmployeeService {
         employee.setStatus(StatusConstant.ENABLE);
         //设置密码，默认123456,并调用工具类实现md5加密
         employee.setPassword(DigestUtils.md5DigestAsHex(PasswordConstant.DEFAULT_PASSWORD.getBytes()));
-        //设置当前记录的创建时间和修改时间
-        employee.setCreateTime(LocalDateTime.now());
-        employee.setUpdateTime(LocalDateTime.now());
-        //从ThreadLocal线程局部变量中取出当前登录用户ID，设置当前记录创建人ID和修改人ID
-        employee.setCreateUser(BaseContext.getCurrentId());
-        employee.setUpdateUser(BaseContext.getCurrentId());
+        //设置当前记录的创建时间和修改时间，已在AutoFillAspect中实现公共字段自动填充
+        //employee.setCreateTime(LocalDateTime.now());employee.setUpdateTime(LocalDateTime.now());
+        //从ThreadLocal线程局部变量中取出当前登录用户ID，设置当前记录创建人ID和修改人ID，已在AutoFillAspect中实现公共字段自动填充
+        //employee.setCreateUser(BaseContext.getCurrentId());employee.setUpdateUser(BaseContext.getCurrentId());
 
         employeeMapper.insert(employee);
 
@@ -162,10 +160,10 @@ public class EmployeeServiceImpl implements EmployeeService {
         Employee employee = new Employee();
         //对象属性拷贝
         BeanUtils.copyProperties(employeeDTO, employee);
-        //设置当前记录的创建时间和修改时间
-        employee.setUpdateTime(LocalDateTime.now());
-        //从ThreadLocal线程局部变量中取出当前登录用户ID，设置当前记录创建人ID和修改人ID
-        employee.setUpdateUser(BaseContext.getCurrentId());
+        //设置当前记录的修改时间和修改人，已在AutoFillAspect中实现公共字段自动填充
+        //employee.setUpdateTime(LocalDateTime.now());
+        //从ThreadLocal线程局部变量中取出当前登录用户ID，设置当前记录创建人ID和修改人ID，已在AutoFillAspect中实现公共字段自动填充
+        //employee.setUpdateUser(BaseContext.getCurrentId());
 
         employeeMapper.update(employee);
     }
