@@ -40,6 +40,7 @@ public class EmployeeController {
      * @param employeeLoginDTO 数据传输实体类
      * @return 返回统一响应结果
      */
+    // todo 分离出LoginController或LoginService层
     @PostMapping("/login")
     @Operation(summary = "员工登录")
     public Result<EmployeeLoginVO> login(@RequestBody EmployeeLoginDTO employeeLoginDTO) {

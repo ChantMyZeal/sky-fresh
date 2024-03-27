@@ -1,3 +1,4 @@
+#环境隔离，开发环境下的配置文件
 sky:
   datasource:
     #驱动类名称
@@ -10,3 +11,8 @@ sky:
     username: root
     #连接数据库的密码
     password: 123456
+  alioss:
+    endpoint: oss-cn-guangzhou.aliyuncs.com #阿里云OSS-Bucket-概览-访问端口-Endpoint
+    access-key-id: LTAI5tGFpKBCLiwBiz3ersp2 #旧版直接配置AccessKeyId
+    access-key-secret: lZ7va5Fbtp7S1MLJWg2UcvEJv0wrop #旧版直接配置AccessKeySecret
+    bucket-name: cmz-sky-take-out #阿里云OSS-Bucket-概览-基本信息-存储空间名称

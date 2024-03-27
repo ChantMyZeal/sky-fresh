@@ -74,7 +74,8 @@ public class WebMvcConfiguration implements WebMvcConfigurer {
     }
 
     /**
-     * 扩展Spring MVC框架的消息转换器
+     * 扩展Spring MVC框架的消息转换器，将日期类型从列表转换为时间戳
+     * 容易导致Knife4j不能正常显示,要注意添加的位置
      *
      * @param converters the list of configured converters to be extended
      */
@@ -86,8 +87,8 @@ public class WebMvcConfiguration implements WebMvcConfigurer {
         MappingJackson2HttpMessageConverter converter = new MappingJackson2HttpMessageConverter();
         //为消息转换器设置一个对象转换器，对象转换器可以将Java对象序列化为json数据
         converter.setObjectMapper(new JacksonObjectMapper());
-        //将自己的消息转换器加入容器中，顺序设置为第一位，优先使用
-        converters.add(0, converter);
+        //将其加入容器中，顺序为原来几个MappingJackson2HttpMessageConverter之前，既避免顺序太后无法生效，也避免顺序太前导致Knife4j异常
+        converters.add(converters.size() - 3, converter);
     }
 
 }
