@@ -4,7 +4,7 @@ sky:
     driver-class-name: com.mysql.cj.jdbc.Driver
     #数据库连接的url
     host: localhost
-    port: 3307
+    port: 3306
     database: sky_take_out
     #连接数据库的用户名
     username: root
