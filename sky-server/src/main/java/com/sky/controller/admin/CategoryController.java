@@ -77,6 +77,7 @@ public class CategoryController {
     @PutMapping
     @Operation(summary = "修改分类")
     public Result<String> update(@RequestBody CategoryDTO categoryDTO) {
+        log.info("修改分类：{}", categoryDTO);
         categoryService.update(categoryDTO);
         return Result.success();
     }
@@ -89,8 +90,9 @@ public class CategoryController {
      * @return 返回统一响应结果
      */
     @PostMapping("/status/{status}")
-    @Operation(summary = "启用禁用分类")
+    @Operation(summary = "启用或禁用分类")
     public Result<String> startOrStop(@PathVariable("status") Integer status, Long id) {
+        log.info("启用或禁用分类：{},{}", status, id);
         categoryService.startOrStop(status, id);
         return Result.success();
     }
@@ -104,6 +106,7 @@ public class CategoryController {
     @GetMapping("/list")
     @Operation(summary = "根据类型查询分类")
     public Result<List<Category>> list(Integer type) {
+        log.info("根据类型查询分类：{}", type);
         List<Category> list = categoryService.list(type);
         return Result.success(list);
     }

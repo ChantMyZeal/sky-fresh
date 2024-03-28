@@ -175,4 +175,34 @@ public class DishServiceImpl implements DishService {
         saveFlavor(dishDTO.getFlavors(), dishDTO.getId());
     }
 
+    /**
+     * 根据分类id查询菜品
+     *
+     * @param categoryId 分类ID
+     * @return 返回菜品集合
+     */
+    @Override
+    public List<Dish> list(Long categoryId) {
+        Dish dish = Dish.builder()
+                .categoryId(categoryId)
+                .status(StatusConstant.ENABLE)
+                .build();
+        return dishMapper.list(dish);
+    }
+
+    /**
+     * 启售或禁售菜品
+     *
+     * @param status 传入的菜品状态参数
+     * @param id     菜品ID
+     */
+    @Override
+    public void startOrStop(Integer status, Long id) {
+        Dish dish = Dish.builder()
+                .status(status)
+                .id(id)
+                .build();
+        dishMapper.update(dish);
+    }
+
 }
