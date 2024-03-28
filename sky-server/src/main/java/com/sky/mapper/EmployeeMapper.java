@@ -40,7 +40,7 @@ public interface EmployeeMapper {
     Page<Employee> pageQuery(EmployeePageQueryDTO employeePageQueryDTO);
 
     /**
-     * 根据主键动态修改属性
+     * 根据ID修改员工信息
      *
      * @param employee 员工实体类
      */
