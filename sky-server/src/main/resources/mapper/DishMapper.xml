@@ -12,7 +12,11 @@
     </insert>
 
     <select id="pageQuery" resultType="com.sky.vo.DishVO">
-        select d.*, c.name as categoryName from dish d left outer join category c on d.category_id = c.id
+        select d.*,
+        c.name as categoryName
+        from dish d
+        left outer join category c
+        on d.category_id = c.id
         <where>
             <if test="name != null and name != ''">
                 and d.name like concat('%',#{name},'%')
@@ -26,5 +30,24 @@
         </where>
         order by d.create_time desc
     </select>
+
+    <select id="getStatusCountByIds" resultType="java.lang.Long">
+        select count(*)
+        from dish
+        where id in
+        <foreach collection="ids" item="id" separator="," open="(" close=")">
+            #{id}
+        </foreach>
+        and status = #{status}
+    </select>
+
+    <delete id="deleteByIds">
+        delete
+        from dish
+        where id in
+        <foreach collection="ids" item="id" separator="," open="(" close=")">
+            #{id}
+        </foreach>
+    </delete>
 
 </mapper>
