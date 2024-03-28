@@ -2,10 +2,13 @@ package com.sky.service.impl;
 
 import com.github.pagehelper.Page;
 import com.github.pagehelper.PageHelper;
+import com.sky.constant.MessageConstant;
+import com.sky.constant.StatusConstant;
 import com.sky.dto.SetmealDTO;
 import com.sky.dto.SetmealPageQueryDTO;
 import com.sky.entity.Setmeal;
 import com.sky.entity.SetmealDish;
+import com.sky.exception.DeletionNotAllowedException;
 import com.sky.mapper.DishMapper;
 import com.sky.mapper.SetmealDishMapper;
 import com.sky.mapper.SetmealMapper;
@@ -39,6 +42,7 @@ public class SetmealServiceImpl implements SetmealService {
      *
      * @param setmealDTO 套餐DTO
      */
+    @Override
     @Transactional
     public void saveWithDish(SetmealDTO setmealDTO) {
         Setmeal setmeal = new Setmeal();
@@ -63,6 +67,7 @@ public class SetmealServiceImpl implements SetmealService {
      * @param setmealPageQueryDTO 套餐分页查询DTO
      * @return 返回封装好的PageResult对象
      */
+    @Override
     public PageResult pageQuery(SetmealPageQueryDTO setmealPageQueryDTO) {
         //设置分页参数
         int pageNum = setmealPageQueryDTO.getPage();
@@ -72,6 +77,32 @@ public class SetmealServiceImpl implements SetmealService {
         Page<SetmealVO> page = setmealMapper.pageQuery(setmealPageQueryDTO);
         //封装PageResult对象
         return new PageResult(page.getTotal(), page.getResult());
+    }
+
+    /**
+     * 批量删除套餐
+     *
+     * @param ids 套餐ID集合
+     */
+    @Override
+    @Transactional
+    public void deleteBatch(List<Long> ids) {
+        // todo 仿照DishServiceImpl利用count来优化查询判断
+        ids.forEach(id -> {
+            Setmeal setmeal = setmealMapper.getById(id);
+            if (StatusConstant.ENABLE.equals(setmeal.getStatus())) {
+                //起售中的套餐不能删除
+                throw new DeletionNotAllowedException(MessageConstant.SETMEAL_ON_SALE);
+            }
+        });
+
+        // todo 优化成SQL批量删除
+        ids.forEach(setmealId -> {
+            //删除套餐表中的数据
+            setmealMapper.deleteById(setmealId);
+            //删除套餐菜品关系表中的数据
+            setmealDishMapper.deleteBySetmealId(setmealId);
+        });
     }
 
 }

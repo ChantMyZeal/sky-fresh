@@ -101,7 +101,7 @@ public class DishServiceImpl implements DishService {
     @Override
     @Transactional
     public void deleteBatch(List<Long> ids) {
-        //判断当前菜品是否满足删除条件——是否已经起售
+        //判断集合中的菜品是否满足删除条件——是否已经起售
         Long enabledDishCount = dishMapper.getStatusCountByIds(ids, StatusConstant.ENABLE);
         if (enabledDishCount > 0) {
             //有菜品起售中，不能删除
