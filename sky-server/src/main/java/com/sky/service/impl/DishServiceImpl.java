@@ -89,7 +89,7 @@ public class DishServiceImpl implements DishService {
         PageHelper.startPage(dishPageQueryDTO.getPage(), dishPageQueryDTO.getPageSize());
         //2.执行查询
         Page<DishVO> page = dishMapper.pageQuery(dishPageQueryDTO);
-        //3.封装PageBean对象
+        //3.封装PageResult对象
         return new PageResult(page.getTotal(), page.getResult());
     }
 

@@ -21,8 +21,6 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.util.DigestUtils;
 
-import java.time.LocalDateTime;
-import java.util.List;
 import java.util.Objects;
 
 @Service
@@ -115,7 +113,7 @@ public class EmployeeServiceImpl implements EmployeeService {
         PageHelper.startPage(employeePageQueryDTO.getPage(), employeePageQueryDTO.getPageSize());
         //2.执行查询
         Page<Employee> page = employeeMapper.pageQuery(employeePageQueryDTO);
-        //3.封装PageBean对象
+        //3.封装PageResult对象
         return new PageResult(page.getTotal(), page.getResult());
     }
 
