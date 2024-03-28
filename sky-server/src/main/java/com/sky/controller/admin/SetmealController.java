@@ -35,12 +35,13 @@ public class SetmealController {
     @PostMapping
     @Operation(summary = "新增套餐")
     public Result save(@RequestBody SetmealDTO setmealDTO) {
+        log.info("新增套餐：{}", setmealDTO);
         setmealService.saveWithDish(setmealDTO);
         return Result.success();
     }
 
     /**
-     * 分页查询
+     * 套餐分页查询
      *
      * @param setmealPageQueryDTO 套餐分页查询DTO
      * @return 返回统一响应结果
@@ -48,6 +49,7 @@ public class SetmealController {
     @GetMapping("/page")
     @Operation(summary = "套餐分页查询")
     public Result<PageResult> page(SetmealPageQueryDTO setmealPageQueryDTO) {
+        log.info("套餐分页查询：{}", setmealPageQueryDTO);
         PageResult pageResult = setmealService.pageQuery(setmealPageQueryDTO);
         return Result.success(pageResult);
     }
@@ -61,6 +63,7 @@ public class SetmealController {
     @DeleteMapping
     @Operation(summary = "批量删除套餐")
     public Result delete(@RequestParam List<Long> ids) {
+        log.info("批量删除套餐：{}", ids);
         setmealService.deleteBatch(ids);
         return Result.success();
     }
@@ -74,6 +77,7 @@ public class SetmealController {
     @GetMapping("/{id}")
     @Operation(summary = "根据id查询套餐")
     public Result<SetmealVO> getById(@PathVariable Long id) {
+        log.info("根据id查询套餐：{}", id);
         SetmealVO setmealVO = setmealService.getByIdWithDish(id);
         return Result.success(setmealVO);
     }
@@ -87,7 +91,23 @@ public class SetmealController {
     @PutMapping
     @Operation(summary = "修改套餐")
     public Result update(@RequestBody SetmealDTO setmealDTO) {
+        log.info("修改套餐：{}", setmealDTO);
         setmealService.update(setmealDTO);
+        return Result.success();
+    }
+
+    /**
+     * 起售或停售套餐
+     *
+     * @param status 套餐状态参数
+     * @param id     套餐ID
+     * @return 返回统一响应结果
+     */
+    @PostMapping("/status/{status}")
+    @Operation(summary = "起售或停售套餐")
+    public Result startOrStop(@PathVariable Integer status, Long id) {
+        log.info("起售或停售套餐：{},{}", status, id);
+        setmealService.startOrStop(status, id);
         return Result.success();
     }
 
