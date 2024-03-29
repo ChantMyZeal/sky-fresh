@@ -11,6 +11,12 @@ spring:
     url: jdbc:mysql://${sky.datasource.host}:${sky.datasource.port}/${sky.datasource.database}?serverTimezone=Asia/Shanghai&useUnicode=true&characterEncoding=utf-8&zeroDateTimeBehavior=convertToNull&useSSL=false&allowPublicKeyRetrieval=true
     username: ${sky.datasource.username} #连接数据库的用户名
     password: ${sky.datasource.password} #连接数据库的密码
+  data:
+    redis:
+      host: ${sky.data.redis.host}
+      port: ${sky.data.redis.port}
+      password: ${sky.data.redis.password}
+      database: ${sky.data.redis.database}
 
 mybatis:
   #mapper配置文件
