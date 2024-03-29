@@ -8,10 +8,12 @@ import com.sky.dto.DishDTO;
 import com.sky.dto.DishPageQueryDTO;
 import com.sky.entity.Dish;
 import com.sky.entity.DishFlavor;
+import com.sky.entity.Setmeal;
 import com.sky.exception.DeletionNotAllowedException;
 import com.sky.mapper.DishFlavorMapper;
 import com.sky.mapper.DishMapper;
 import com.sky.mapper.SetmealDishMapper;
+import com.sky.mapper.SetmealMapper;
 import com.sky.result.PageResult;
 import com.sky.service.DishService;
 import com.sky.vo.DishVO;
@@ -23,6 +25,7 @@ import org.springframework.transaction.annotation.Transactional;
 
 import java.util.Collections;
 import java.util.List;
+import java.util.Objects;
 
 @Service
 @Slf4j
@@ -34,6 +37,8 @@ public class DishServiceImpl implements DishService {
     private DishFlavorMapper dishFlavorMapper;
     @Autowired
     private SetmealDishMapper setmealDishMapper;
+    @Autowired
+    private SetmealMapper setmealMapper;
 
     /**
      * 抽取出的插入口味公共方法
@@ -44,7 +49,6 @@ public class DishServiceImpl implements DishService {
     public void saveFlavor(List<DishFlavor> flavors, Long dishId) {
         if (flavors != null && !flavors.isEmpty()) {
             flavors.forEach(dishFlavor -> dishFlavor.setDishId(dishId));
-            //向口味表插入N条数据
             dishFlavorMapper.insertBatch(flavors);
         }
     }
@@ -57,11 +61,9 @@ public class DishServiceImpl implements DishService {
     @Override
     @Transactional
     public void saveWithFlavor(DishDTO dishDTO) {
-
+        //向菜品表插入数据
         Dish dish = new Dish();
         BeanUtils.copyProperties(dishDTO, dish);
-
-        //向菜品表插入1条数据
         dishMapper.insert(dish);
 
         //获取insert语句生成的主键值
@@ -72,7 +74,6 @@ public class DishServiceImpl implements DishService {
         /*List<DishFlavor> flavors = dishDTO.getFlavors();
         if (flavors != null && !flavors.isEmpty()) {
             flavors.forEach(dishFlavor -> dishFlavor.setDishId(dishId));
-            //向口味表插入N条数据
             dishFlavorMapper.insertBatch(flavors);
         }*/
     }
@@ -102,7 +103,7 @@ public class DishServiceImpl implements DishService {
     @Transactional
     public void deleteBatch(List<Long> ids) {
         //判断集合中的菜品是否满足删除条件——是否已经起售
-        Long enabledDishCount = dishMapper.getStatusCountByIds(ids, StatusConstant.ENABLE);
+        Long enabledDishCount = dishMapper.getCountByIdsAndStatus(ids, StatusConstant.ENABLE);
         if (enabledDishCount > 0) {
             //有菜品起售中，不能删除
             throw new DeletionNotAllowedException(MessageConstant.DISH_ON_SALE);
@@ -167,12 +168,14 @@ public class DishServiceImpl implements DishService {
         BeanUtils.copyProperties(dishDTO, dish);
         dishMapper.update(dish);
 
-        //删除原有的口味数据
-        List<Long> id = Collections.singletonList(dishDTO.getId());
-        dishFlavorMapper.deleteByDishIds(id);
+        //获取菜品ID
+        Long dishId = dishDTO.getId();
+
+        //封装为单例列表，复用批量删除接口，删除原有的口味数据
+        dishFlavorMapper.deleteByDishIds(Collections.singletonList(dishId));
 
         //重新插入口味数据，复用抽取出的插入口味公共方法
-        saveFlavor(dishDTO.getFlavors(), dishDTO.getId());
+        saveFlavor(dishDTO.getFlavors(), dishId);
     }
 
     /**
@@ -197,7 +200,22 @@ public class DishServiceImpl implements DishService {
      * @param id     菜品ID
      */
     @Override
+    @Transactional
     public void startOrStop(Integer status, Long id) {
+        //停售菜品时自动停售关联的套餐
+        if (Objects.equals(status, StatusConstant.DISABLE)) {
+            //查找要停售的菜品ID对应的套餐ID
+            List<Long> setmealIds = setmealDishMapper.getSetmealIdsByDishIds(Collections.singletonList(id));
+            //遍历套餐ID集合，停售套餐
+            setmealIds.forEach(setmealId -> {
+                Setmeal setmeal = Setmeal.builder()
+                        .id(setmealId)
+                        .status(status)
+                        .build();
+                setmealMapper.update(setmeal);
+            });
+        }
+
         Dish dish = Dish.builder()
                 .status(status)
                 .id(id)

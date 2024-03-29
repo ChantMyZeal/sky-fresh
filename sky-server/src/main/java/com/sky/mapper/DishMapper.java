@@ -49,13 +49,13 @@ public interface DishMapper {
     Dish getById(Long id);
 
     /**
-     * 在提供的菜品ID集合中查询某种状态的菜品数量
+     * 根据菜品ID集合和状态参数查询满足条件的的菜品数量
      *
      * @param ids    菜品ID集合
-     * @param status 需要查询数量的状态参数
-     * @return 返回已起售的菜品数量
+     * @param status 状态参数
+     * @return 返回满足条件的菜品数量
      */
-    Long getStatusCountByIds(List<Long> ids, Integer status);
+    Long getCountByIdsAndStatus(List<Long> ids, Integer status);
 
     /**
      * 根据菜品ID集合批量删除菜品
@@ -86,7 +86,16 @@ public interface DishMapper {
      * @param setmealId 套餐ID
      * @return 返回菜品实体集合
      */
-    @Select("select a.* from dish a left join setmeal_dish b on a.id = b.dish_id where b.setmeal_id = #{setmealId}")
+    @Select("select a.* from dish a right join setmeal_dish b on a.id = b.dish_id where b.setmeal_id = #{setmealId}")
     List<Dish> getBySetmealId(Long setmealId);
+
+    /**
+     * 根据套餐ID和状态参数查询满足条件的菜品数量
+     *
+     * @param setmealId 套餐ID
+     * @param status    状态参数
+     * @return 返回满足条件的菜品数量
+     */
+    Long getCountBySetmealIdAndStatus(Long setmealId, Integer status);
 
 }

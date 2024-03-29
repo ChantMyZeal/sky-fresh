@@ -34,7 +34,7 @@ public interface SetmealDishMapper {
     void insertBatch(List<SetmealDish> setmealDishes);
 
     /**
-     * 根据套餐id删除套餐和菜品的关联关系
+     * 根据套餐ID删除套餐和菜品的关联关系
      *
      * @param setmealId 套餐ID
      */
@@ -42,7 +42,14 @@ public interface SetmealDishMapper {
     void deleteBySetmealId(Long setmealId);
 
     /**
-     * 根据套餐id查询套餐和菜品的关联关系
+     * 根据套餐ID集合删除套餐和菜品的关联关系
+     *
+     * @param setmealIds 套餐ID集合
+     */
+    void deleteBySetmealIds(List<Long> setmealIds);
+
+    /**
+     * 根据套餐ID查询套餐和菜品的关联关系
      *
      * @param setmealId 套餐ID
      * @return 返回套餐-菜品关系的集合

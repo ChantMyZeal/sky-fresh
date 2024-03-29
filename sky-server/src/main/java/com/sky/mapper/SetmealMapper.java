@@ -10,6 +10,8 @@ import org.apache.ibatis.annotations.Delete;
 import org.apache.ibatis.annotations.Mapper;
 import org.apache.ibatis.annotations.Select;
 
+import java.util.List;
+
 @Mapper
 public interface SetmealMapper {
 
@@ -39,7 +41,7 @@ public interface SetmealMapper {
     Page<SetmealVO> pageQuery(SetmealPageQueryDTO setmealPageQueryDTO);
 
     /**
-     * 根据id查询套餐
+     * 根据ID查询套餐
      *
      * @param id 套餐ID
      * @return 返回套餐实体类
@@ -48,12 +50,28 @@ public interface SetmealMapper {
     Setmeal getById(Long id);
 
     /**
-     * 根据id删除套餐
+     * 根据套餐ID集合和状态参数查询满足条件的套餐数量
+     *
+     * @param ids    套餐ID集合
+     * @param status 状态参数
+     * @return 返回满足条件的套餐数量
+     */
+    Long getCountByIdsAndStatus(List<Long> ids, Integer status);
+
+    /**
+     * 根据ID删除套餐
      *
      * @param id 套餐ID
      */
     @Delete("delete from setmeal where id = #{id}")
     void deleteById(Long id);
+
+    /**
+     * 根据ID集合批量删除套餐
+     *
+     * @param ids 套餐ID集合
+     */
+    void deleteByIds(List<Long> ids);
 
     /**
      * 根据ID修改套餐信息

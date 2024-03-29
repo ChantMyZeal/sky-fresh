@@ -34,6 +34,25 @@
         order by s.create_time desc
     </select>
 
+    <select id="getCountByIdsAndStatus" resultType="java.lang.Long">
+        select count(*)
+        from setmeal
+        where id in
+        <foreach collection="ids" item="id" separator="," open="(" close=")">
+            #{id}
+        </foreach>
+        and status = #{status}
+    </select>
+
+    <delete id="deleteByIds">
+        delete
+        from setmeal
+        where id in
+        <foreach collection="ids" item="id" separator="," open="(" close=")">
+            #{id}
+        </foreach>
+    </delete>
+
     <update id="update">
         update setmeal
         <set>

@@ -6,7 +6,6 @@ import com.sky.constant.MessageConstant;
 import com.sky.constant.StatusConstant;
 import com.sky.dto.SetmealDTO;
 import com.sky.dto.SetmealPageQueryDTO;
-import com.sky.entity.Dish;
 import com.sky.entity.Setmeal;
 import com.sky.entity.SetmealDish;
 import com.sky.exception.DeletionNotAllowedException;
@@ -23,6 +22,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.util.Collections;
 import java.util.List;
 import java.util.Objects;
 
@@ -41,6 +41,20 @@ public class SetmealServiceImpl implements SetmealService {
     private DishMapper dishMapper;
 
     /**
+     * 提取出的插入套餐-菜品关系表的公共方法
+     *
+     * @param setmealDishes 套餐-菜品关系集合
+     * @param setmealId     套餐ID
+     */
+    public void saveSetmealDish(List<SetmealDish> setmealDishes, Long setmealId) {
+        if (setmealDishes != null && !setmealDishes.isEmpty()) {
+            setmealDishes.forEach(setmealDish -> setmealDish.setSetmealId(setmealId));
+            setmealDishMapper.insertBatch(setmealDishes);
+        }
+
+    }
+
+    /**
      * 新增套餐，同时需要保存套餐和菜品的关联关系
      *
      * @param setmealDTO 套餐DTO
@@ -48,20 +62,19 @@ public class SetmealServiceImpl implements SetmealService {
     @Override
     @Transactional
     public void saveWithDish(SetmealDTO setmealDTO) {
+        //向套餐表插入数据
         Setmeal setmeal = new Setmeal();
         BeanUtils.copyProperties(setmealDTO, setmeal);
-
-        //向套餐表插入数据
         setmealMapper.insert(setmeal);
 
-        //获取生成的套餐id
+        //获取insert语句生成的套餐ID
         Long setmealId = setmeal.getId();
 
-        List<SetmealDish> setmealDishes = setmealDTO.getSetmealDishes();
+        //复用抽取出的公共方法，保存套餐和菜品的关联关系
+        saveSetmealDish(setmealDTO.getSetmealDishes(), setmealId);
+        /*List<SetmealDish> setmealDishes = setmealDTO.getSetmealDishes();
         setmealDishes.forEach(setmealDish -> setmealDish.setSetmealId(setmealId));
-
-        //保存套餐和菜品的关联关系
-        setmealDishMapper.insertBatch(setmealDishes);
+        setmealDishMapper.insertBatch(setmealDishes);*/
     }
 
     /**
@@ -90,22 +103,29 @@ public class SetmealServiceImpl implements SetmealService {
     @Override
     @Transactional
     public void deleteBatch(List<Long> ids) {
-        // todo 仿照DishServiceImpl利用count来优化查询判断
-        ids.forEach(id -> {
+        //判断集合中的菜品是否满足删除条件——是否已经起售
+        Long enabledSetmealCount = setmealMapper.getCountByIdsAndStatus(ids, StatusConstant.ENABLE);
+        if (enabledSetmealCount > 0) {
+            //有套餐起售中，不能删除
+            throw new DeletionNotAllowedException(MessageConstant.SETMEAL_ON_SALE);
+        }
+        /*ids.forEach(id -> {
             Setmeal setmeal = setmealMapper.getById(id);
             if (StatusConstant.ENABLE.equals(setmeal.getStatus())) {
                 //起售中的套餐不能删除
                 throw new DeletionNotAllowedException(MessageConstant.SETMEAL_ON_SALE);
             }
-        });
+        });*/
 
-        // todo 优化成SQL批量删除
-        ids.forEach(setmealId -> {
+        //根据套餐ID集合批量删除套餐表数据和套餐菜品关系表数据
+        setmealMapper.deleteByIds(ids);
+        setmealDishMapper.deleteBySetmealIds(ids);
+        /*ids.forEach(setmealId -> {
             //删除套餐表中的数据
             setmealMapper.deleteById(setmealId);
             //删除套餐菜品关系表中的数据
             setmealDishMapper.deleteBySetmealId(setmealId);
-        });
+        });*/
     }
 
     /**
@@ -134,22 +154,22 @@ public class SetmealServiceImpl implements SetmealService {
     @Override
     @Transactional
     public void update(SetmealDTO setmealDTO) {
+        //修改套餐基本信息
         Setmeal setmeal = new Setmeal();
         BeanUtils.copyProperties(setmealDTO, setmeal);
-
-        //1、修改套餐表，执行update
         setmealMapper.update(setmeal);
 
-        //套餐id
+        //获取套餐ID
         Long setmealId = setmealDTO.getId();
 
-        //2、删除套餐和菜品的关联关系，操作setmeal_dish表，执行delete
-        setmealDishMapper.deleteBySetmealId(setmealId);// todo 批量删除实现之后这里改为创建单例列表然后传入批量删除
+        //封装为单例列表，复用批量删除接口，删除套餐和菜品的关联关系
+        setmealDishMapper.deleteBySetmealIds(Collections.singletonList(setmealId));
 
-        List<SetmealDish> setmealDishes = setmealDTO.getSetmealDishes();
+        //复用抽取出的公共方法，重新插入套餐和菜品的关联关系
+        saveSetmealDish(setmealDTO.getSetmealDishes(), setmealId);
+        /*List<SetmealDish> setmealDishes = setmealDTO.getSetmealDishes();
         setmealDishes.forEach(setmealDish -> setmealDish.setSetmealId(setmealId));
-        //3、重新插入套餐和菜品的关联关系，操作setmeal_dish表，执行insert
-        setmealDishMapper.insertBatch(setmealDishes);
+        setmealDishMapper.insertBatch(setmealDishes);*/
     }
 
     /**
@@ -160,17 +180,21 @@ public class SetmealServiceImpl implements SetmealService {
      */
     @Override
     public void startOrStop(Integer status, Long id) {
-        //起售套餐时，判断套餐内是否有停售菜品，有停售菜品提示"套餐内包含未启售菜品，无法启售"
+        //启售套餐时，判断套餐内是否有停售菜品，有停售菜品提示"套餐内包含未启售菜品，无法启售"
         if (Objects.equals(status, StatusConstant.ENABLE)) {
-            //select a.* from dish a left join setmeal_dish b on a.id = b.dish_id where b.setmeal_id = ?
-            List<Dish> dishList = dishMapper.getBySetmealId(id);// todo 看看能否优化
+            Long disabledDishCount = dishMapper.getCountBySetmealIdAndStatus(id, StatusConstant.DISABLE);
+            if (disabledDishCount > 0) {
+                //套餐内有停售菜品，不能启售
+                throw new SetmealEnableFailedException(MessageConstant.SETMEAL_ENABLE_FAILED);
+            }
+            /*List<Dish> dishList = dishMapper.getBySetmealId(id);
             if (dishList != null && !dishList.isEmpty()) {
                 dishList.forEach(dish -> {
                     if (StatusConstant.DISABLE.equals(dish.getStatus())) {
                         throw new SetmealEnableFailedException(MessageConstant.SETMEAL_ENABLE_FAILED);
                     }
                 });
-            }
+            }*/
         }
 
         Setmeal setmeal = Setmeal.builder()
