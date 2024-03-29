@@ -18,6 +18,22 @@ spring:
       password: ${sky.data.redis.password}
       database: ${sky.data.redis.database}
 
+springdoc:
+  api-docs:
+    path: /v3/api-docs
+  packages-to-scan: com.sky.controller
+  group-configs:
+    - group: admin
+      paths-to-match:
+        - /admin/**
+      packages-to-scan:
+        - com.sky.controller
+    - group: user
+      paths-to-match:
+        - /user/**
+      packages-to-scan:
+        - com.sky.controller
+
 mybatis:
   #mapper配置文件
   mapper-locations: classpath:mapper/*.xml
