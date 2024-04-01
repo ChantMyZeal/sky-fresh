@@ -34,7 +34,7 @@ public class SetmealController {
      */
     @PostMapping
     @Operation(summary = "新增套餐")
-    public Result save(@RequestBody SetmealDTO setmealDTO) {
+    public Result<String> save(@RequestBody SetmealDTO setmealDTO) {
         log.info("新增套餐：{}", setmealDTO);
         setmealService.saveWithDish(setmealDTO);
         return Result.success();
@@ -62,7 +62,7 @@ public class SetmealController {
      */
     @DeleteMapping
     @Operation(summary = "批量删除套餐")
-    public Result delete(@RequestParam List<Long> ids) {
+    public Result<String> delete(@RequestParam List<Long> ids) {
         log.info("批量删除套餐：{}", ids);
         setmealService.deleteBatch(ids);
         return Result.success();
@@ -90,7 +90,7 @@ public class SetmealController {
      */
     @PutMapping
     @Operation(summary = "修改套餐")
-    public Result update(@RequestBody SetmealDTO setmealDTO) {
+    public Result<String> update(@RequestBody SetmealDTO setmealDTO) {
         log.info("修改套餐：{}", setmealDTO);
         setmealService.update(setmealDTO);
         return Result.success();
@@ -105,7 +105,7 @@ public class SetmealController {
      */
     @PostMapping("/status/{status}")
     @Operation(summary = "起售或停售套餐")
-    public Result startOrStop(@PathVariable Integer status, Long id) {
+    public Result<String> startOrStop(@PathVariable Integer status, Long id) {
         log.info("起售或停售套餐：{},{}", status, id);
         setmealService.startOrStop(status, id);
         return Result.success();

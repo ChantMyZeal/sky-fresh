@@ -116,7 +116,7 @@ public class EmployeeController {
      */
     @PostMapping("/status/{status}")
     @Operation(summary = "启用或禁用员工账号")
-    public Result startOrStop(@PathVariable Integer status, Long id) {
+    public Result<String> startOrStop(@PathVariable Integer status, Long id) {
         log.info("启用或禁用员工账号：{},{}", status, id);
         employeeService.startOrStop(status, id);
         return Result.success();
@@ -144,7 +144,7 @@ public class EmployeeController {
      */
     @PutMapping
     @Operation(summary = "编辑员工信息")
-    public Result update(@RequestBody EmployeeDTO employeeDTO) {
+    public Result<String> update(@RequestBody EmployeeDTO employeeDTO) {
         log.info("编辑员工信息：{}", employeeDTO);
         employeeService.update(employeeDTO);
         return Result.success();
