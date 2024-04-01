@@ -11,14 +11,17 @@ sky:
     username: root
     #连接数据库的密码
     password: 123456
-  alioss:
-    endpoint: oss-cn-guangzhou.aliyuncs.com #阿里云OSS-Bucket-概览-访问端口-Endpoint
-    access-key-id: LTAI5tGFpKBCLiwBiz3ersp2 #旧版直接配置AccessKeyId
-    access-key-secret: lZ7va5Fbtp7S1MLJWg2UcvEJv0wrop #旧版直接配置AccessKeySecret
-    bucket-name: cmz-sky-take-out #阿里云OSS-Bucket-概览-基本信息-存储空间名称
   data:
     redis:
       host: localhost
       port: 6379
       password: 123456
       database: 10
+  alioss:
+    endpoint: oss-cn-guangzhou.aliyuncs.com #阿里云OSS-Bucket-概览-访问端口-Endpoint
+    access-key-id: LTAI5tGFpKBCLiwBiz3ersp2 #旧版直接配置AccessKeyId
+    access-key-secret: lZ7va5Fbtp7S1MLJWg2UcvEJv0wrop #旧版直接配置AccessKeySecret
+    bucket-name: cmz-sky-take-out #阿里云OSS-Bucket-概览-基本信息-存储空间名称
+  wechat:
+    appid: wx560e0c39a9abbcd6
+    secret: 28aec77ee5313ccf4794f23ac4b31678
