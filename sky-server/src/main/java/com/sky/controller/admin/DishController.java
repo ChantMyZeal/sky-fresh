@@ -35,7 +35,7 @@ public class DishController {
      */
     @PostMapping
     @Operation(summary = "新增菜品")
-    public Result save(@RequestBody DishDTO dishDTO) {
+    public Result<String> save(@RequestBody DishDTO dishDTO) {
         log.info("新增菜品：{}", dishDTO);
         dishService.saveWithFlavor(dishDTO);
         return Result.success();
@@ -63,7 +63,7 @@ public class DishController {
      */
     @DeleteMapping
     @Operation(summary = "菜品批量删除")
-    public Result delete(@RequestParam List<Long> ids) {
+    public Result<String> delete(@RequestParam List<Long> ids) {
         log.info("菜品批量删除：{}", ids);
         dishService.deleteBatch(ids);
         return Result.success();
@@ -91,7 +91,7 @@ public class DishController {
      */
     @PutMapping
     @Operation(summary = "修改菜品")
-    public Result update(@RequestBody DishDTO dishDTO) {
+    public Result<String> update(@RequestBody DishDTO dishDTO) {
         log.info("修改菜品：{}", dishDTO);
         dishService.updateWithFlavor(dishDTO);
         return Result.success();
@@ -119,7 +119,7 @@ public class DishController {
      */
     @PostMapping("/status/{status}")
     @Operation(summary = "启售或禁售菜品")
-    public Result startOrStop(@PathVariable Integer status, Long id) {
+    public Result<String> startOrStop(@PathVariable Integer status, Long id) {
         log.info("启售或禁售菜品：{},{}", status, id);
         dishService.startOrStop(status, id);
         return Result.success();

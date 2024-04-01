@@ -13,7 +13,7 @@ import java.util.Objects;
 
 @RestController("userShopController")
 @RequestMapping("/user/shop")
-@Tag(name = "店铺相关接口")
+@Tag(name = "C端-店铺相关接口")
 @Slf4j
 public class ShopController {
 

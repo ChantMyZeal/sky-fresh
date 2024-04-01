@@ -23,6 +23,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 import java.util.Objects;
@@ -194,6 +195,32 @@ public class DishServiceImpl implements DishService {
     }
 
     /**
+     * 条件查询菜品和口味
+     *
+     * @param dish 菜品实体对象
+     * @return 返回菜品VO集合
+     */
+    @Override
+    public List<DishVO> listWithFlavor(Dish dish) {
+        List<Dish> dishList = dishMapper.list(dish);
+
+        List<DishVO> dishVOList = new ArrayList<>();
+
+        for (Dish d : dishList) {
+            DishVO dishVO = new DishVO();
+            BeanUtils.copyProperties(d, dishVO);
+
+            //根据菜品id查询对应的口味
+            List<DishFlavor> flavors = dishFlavorMapper.getByDishId(d.getId());
+
+            dishVO.setFlavors(flavors);
+            dishVOList.add(dishVO);
+        }
+
+        return dishVOList;
+    }
+
+    /**
      * 启售或禁售菜品
      *
      * @param status 传入的菜品状态参数
@@ -202,25 +229,27 @@ public class DishServiceImpl implements DishService {
     @Override
     @Transactional
     public void startOrStop(Integer status, Long id) {
-        //停售菜品时自动停售关联的套餐
-        if (Objects.equals(status, StatusConstant.DISABLE)) {
-            //查找要停售的菜品ID对应的套餐ID
-            List<Long> setmealIds = setmealDishMapper.getSetmealIdsByDishIds(Collections.singletonList(id));
-            //遍历套餐ID集合，停售套餐
-            setmealIds.forEach(setmealId -> {
-                Setmeal setmeal = Setmeal.builder()
-                        .id(setmealId)
-                        .status(status)
-                        .build();
-                setmealMapper.update(setmeal);
-            });
-        }
-
         Dish dish = Dish.builder()
                 .status(status)
                 .id(id)
                 .build();
         dishMapper.update(dish);
+
+        //停售菜品时自动停售关联的套餐
+        if (Objects.equals(status, StatusConstant.DISABLE)) {
+            //查找要停售的菜品ID对应的套餐ID
+            List<Long> setmealIds = setmealDishMapper.getSetmealIdsByDishIds(Collections.singletonList(id));
+            if (setmealIds != null && !setmealIds.isEmpty()) {
+                //遍历套餐ID集合，停售套餐
+                setmealIds.forEach(setmealId -> {
+                    Setmeal setmeal = Setmeal.builder()
+                            .id(setmealId)
+                            .status(status)
+                            .build();
+                    setmealMapper.update(setmeal);
+                });
+            }
+        }
     }
 
 }

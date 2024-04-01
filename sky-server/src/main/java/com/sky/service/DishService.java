@@ -56,6 +56,14 @@ public interface DishService {
     List<Dish> list(Long categoryId);
 
     /**
+     * 条件查询菜品和口味
+     *
+     * @param dish 菜品实体对象
+     * @return 返回菜品VO集合
+     */
+    List<DishVO> listWithFlavor(Dish dish);
+
+    /**
      * 启售或禁售菜品
      *
      * @param status 传入的菜品状态参数
