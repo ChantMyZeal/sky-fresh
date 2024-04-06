@@ -10,6 +10,7 @@ import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.cache.annotation.CacheEvict;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
@@ -89,7 +90,8 @@ public class SetmealController {
      * @return 返回统一响应结果
      */
     @PutMapping
-    @Operation(summary = "修改套餐")
+    @Operation(summary = "修改套餐")// todo 考虑是否添加启售中的套餐无法修改的逻辑
+    @CacheEvict(cacheNames = "setmealCache", allEntries = true)
     public Result<String> update(@RequestBody SetmealDTO setmealDTO) {
         log.info("修改套餐：{}", setmealDTO);
         setmealService.update(setmealDTO);
@@ -105,6 +107,7 @@ public class SetmealController {
      */
     @PostMapping("/status/{status}")
     @Operation(summary = "起售或停售套餐")
+    @CacheEvict(cacheNames = "setmealCache", allEntries = true)
     public Result<String> startOrStop(@PathVariable Integer status, Long id) {
         log.info("起售或停售套餐：{},{}", status, id);
         setmealService.startOrStop(status, id);

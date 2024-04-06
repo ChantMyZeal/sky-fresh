@@ -11,6 +11,7 @@ import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.cache.annotation.CacheEvict;
 import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.web.bind.annotation.*;
 
@@ -140,6 +141,7 @@ public class DishController {
      */
     @PostMapping("/status/{status}")
     @Operation(summary = "启售或禁售菜品")
+    @CacheEvict(cacheNames = "setmealCache", allEntries = true)//也要清除套餐的缓存 todo 看能否优化到service层中
     public Result<String> startOrStop(@PathVariable Integer status, Long id) {
         log.info("启售或禁售菜品：{},{}", status, id);
 
