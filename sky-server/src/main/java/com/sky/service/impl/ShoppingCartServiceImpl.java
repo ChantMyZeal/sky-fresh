@@ -67,4 +67,18 @@ public class ShoppingCartServiceImpl implements ShoppingCartService {
         }
     }
 
+    /**
+     * 查看购物车
+     *
+     * @return 返回购物车实体对象集合
+     */
+    @Override
+    public List<ShoppingCart> showShoppingCart() {
+        Long userId = BaseContext.getCurrentId();//获取当前微信用户ID
+        ShoppingCart shoppingCart = ShoppingCart.builder()
+                .userId(userId)
+                .build();
+        return shoppingCartMapper.list(shoppingCart);
+    }
+
 }
