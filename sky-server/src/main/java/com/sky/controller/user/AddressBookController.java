@@ -14,7 +14,7 @@ import java.util.List;
 
 @RestController
 @RequestMapping("/user/addressBook")
-@Tag(name = "C端地址簿接口")
+@Tag(name = "C端-地址簿接口")
 @Slf4j
 public class AddressBookController {
 
