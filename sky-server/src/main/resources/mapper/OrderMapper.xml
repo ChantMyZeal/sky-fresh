@@ -47,7 +47,8 @@
     </update>
 
     <select id="pageQuery" resultType="Orders">
-        select * from orders
+        select *
+        from orders
         <where>
             <if test="number != null and number != ''">
                 and number like concat('%',#{number},'%')
