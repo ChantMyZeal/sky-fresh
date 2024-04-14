@@ -35,8 +35,17 @@ public interface OrderService {
      * 拒单
      *
      * @param ordersRejectionDTO 订单拒绝DTO
+     * @throws Exception 抛出异常
      */
     void rejection(OrdersRejectionDTO ordersRejectionDTO) throws Exception;
+
+    /**
+     * 取消订单
+     *
+     * @param ordersCancelDTO 订单取消DTO
+     * @throws Exception 抛出异常
+     */
+    void cancel(OrdersCancelDTO ordersCancelDTO) throws Exception;
 
     /**
      * 用户下单

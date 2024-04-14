@@ -149,6 +149,7 @@ public class OrderServiceImpl implements OrderService {
      * 拒单
      *
      * @param ordersRejectionDTO 订单拒绝DTO
+     * @throws Exception 抛出异常
      */
     public void rejection(OrdersRejectionDTO ordersRejectionDTO) throws Exception {
         // 根据id查询订单
@@ -178,6 +179,40 @@ public class OrderServiceImpl implements OrderService {
         // 根据订单id更新订单状态、拒单原因、取消时间
         orders.setStatus(Orders.CANCELLED);
         orders.setRejectionReason(ordersRejectionDTO.getRejectionReason());
+        orders.setCancelTime(LocalDateTime.now());
+
+        orderMapper.update(orders);
+    }
+
+    /**
+     * 取消订单
+     *
+     * @param ordersCancelDTO 订单取消DTO
+     * @throws Exception 抛出异常
+     */
+    public void cancel(OrdersCancelDTO ordersCancelDTO) throws Exception {
+        // 根据id查询订单
+        Orders ordersDB = orderMapper.getById(ordersCancelDTO.getId());
+
+        Orders orders = new Orders();
+        orders.setId(ordersCancelDTO.getId());
+
+        //若用户已支付，则需要退款
+        if (Objects.equals(ordersDB.getPayStatus(), Orders.PAID)) {
+            //调用微信支付退款接口
+            /*String refund = weChatPayUtil.refund(
+                    ordersDB.getNumber(),
+                    ordersDB.getNumber(),
+                    new BigDecimal("0.01"),
+                    new BigDecimal("0.01"));*/
+
+            log.info("申请退款...");
+            orders.setPayStatus(Orders.REFUND);//支付状态修改为 退款
+        }
+
+        // 根据订单id更新订单状态、取消原因、取消时间
+        orders.setStatus(Orders.CANCELLED);
+        orders.setCancelReason(ordersCancelDTO.getCancelReason());
         orders.setCancelTime(LocalDateTime.now());
 
         orderMapper.update(orders);
@@ -369,7 +404,7 @@ public class OrderServiceImpl implements OrderService {
         }
 
         //订单状态 1待付款 2待接单 3已接单 4派送中 5已完成 6已取消
-        if (ordersDB.getStatus() > 2) {
+        if (ordersDB.getStatus() > Orders.TO_BE_CONFIRMED) {
             throw new OrderBusinessException(MessageConstant.ORDER_STATUS_ERROR);//todo 增加异常为请联系商家
         }
 

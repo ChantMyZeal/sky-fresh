@@ -1,5 +1,6 @@
 package com.sky.controller.admin;
 
+import com.sky.dto.OrdersCancelDTO;
 import com.sky.dto.OrdersConfirmDTO;
 import com.sky.dto.OrdersPageQueryDTO;
 import com.sky.dto.OrdersRejectionDTO;
@@ -89,6 +90,20 @@ public class OrderController {
     @Operation(summary = "拒单")
     public Result<String> rejection(@RequestBody OrdersRejectionDTO ordersRejectionDTO) throws Exception {
         orderService.rejection(ordersRejectionDTO);
+        return Result.success();
+    }
+
+    /**
+     * 取消订单
+     *
+     * @param ordersCancelDTO 订单取消DTO
+     * @return 返回统一响应结果
+     * @throws Exception 抛出异常
+     */
+    @PutMapping("/cancel")
+    @Operation(summary = "取消订单")
+    public Result<String> cancel(@RequestBody OrdersCancelDTO ordersCancelDTO) throws Exception {
+        orderService.cancel(ordersCancelDTO);
         return Result.success();
     }
 
