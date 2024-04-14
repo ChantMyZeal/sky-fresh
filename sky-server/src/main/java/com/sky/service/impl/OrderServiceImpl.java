@@ -151,6 +151,7 @@ public class OrderServiceImpl implements OrderService {
      * @param ordersRejectionDTO 订单拒绝DTO
      * @throws Exception 抛出异常
      */
+    @Override
     public void rejection(OrdersRejectionDTO ordersRejectionDTO) throws Exception {
         // 根据id查询订单
         Orders ordersDB = orderMapper.getById(ordersRejectionDTO.getId());
@@ -190,6 +191,7 @@ public class OrderServiceImpl implements OrderService {
      * @param ordersCancelDTO 订单取消DTO
      * @throws Exception 抛出异常
      */
+    @Override
     public void cancel(OrdersCancelDTO ordersCancelDTO) throws Exception {
         // 根据id查询订单
         Orders ordersDB = orderMapper.getById(ordersCancelDTO.getId());
@@ -214,6 +216,29 @@ public class OrderServiceImpl implements OrderService {
         orders.setStatus(Orders.CANCELLED);
         orders.setCancelReason(ordersCancelDTO.getCancelReason());
         orders.setCancelTime(LocalDateTime.now());
+
+        orderMapper.update(orders);
+    }
+
+    /**
+     * 派送订单
+     *
+     * @param id 订单ID
+     */
+    @Override
+    public void delivery(Long id) {
+        // 根据id查询订单
+        Orders ordersDB = orderMapper.getById(id);
+
+        // 校验订单是否存在，并且状态为3
+        if (ordersDB == null || !ordersDB.getStatus().equals(Orders.CONFIRMED)) {
+            throw new OrderBusinessException(MessageConstant.ORDER_STATUS_ERROR);
+        }
+
+        Orders orders = new Orders();
+        orders.setId(ordersDB.getId());
+        // 更新订单状态,状态转为派送中
+        orders.setStatus(Orders.DELIVERY_IN_PROGRESS);
 
         orderMapper.update(orders);
     }

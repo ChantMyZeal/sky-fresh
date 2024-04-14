@@ -107,4 +107,17 @@ public class OrderController {
         return Result.success();
     }
 
+    /**
+     * 派送订单
+     *
+     * @param id 订单ID
+     * @return 返回统一响应结果
+     */
+    @PutMapping("/delivery/{id}")
+    @Operation(summary = "派送订单")
+    public Result<String> delivery(@PathVariable("id") Long id) {
+        orderService.delivery(id);
+        return Result.success();
+    }
+
 }
