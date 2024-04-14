@@ -55,6 +55,13 @@ public interface OrderService {
     void delivery(Long id);
 
     /**
+     * 完成订单
+     *
+     * @param id 订单ID
+     */
+    void complete(Long id);
+
+    /**
      * 用户下单
      *
      * @param ordersSubmitDTO 订单提交DTO

@@ -120,4 +120,17 @@ public class OrderController {
         return Result.success();
     }
 
+    /**
+     * 完成订单
+     *
+     * @param id 订单ID
+     * @return 返回统一响应结果
+     */
+    @PutMapping("/complete/{id}")
+    @Operation(summary = "完成订单")
+    public Result<String> complete(@PathVariable("id") Long id) {
+        orderService.complete(id);
+        return Result.success();
+    }
+
 }
