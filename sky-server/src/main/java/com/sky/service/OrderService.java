@@ -1,5 +1,6 @@
 package com.sky.service;
 
+import com.sky.dto.OrdersPageQueryDTO;
 import com.sky.dto.OrdersPaymentDTO;
 import com.sky.dto.OrdersSubmitDTO;
 import com.sky.result.PageResult;
@@ -8,6 +9,14 @@ import com.sky.vo.OrderSubmitVO;
 import com.sky.vo.OrderVO;
 
 public interface OrderService {
+
+    /**
+     * 订单分页条件查询
+     *
+     * @param ordersPageQueryDTO 订单分页查询DTO
+     * @return 返回分页结果
+     */
+    PageResult conditionSearch(OrdersPageQueryDTO ordersPageQueryDTO);
 
     /**
      * 用户下单
