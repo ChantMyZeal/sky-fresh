@@ -166,7 +166,7 @@ public class OrderServiceImpl implements OrderService {
         // 设置分页
         PageHelper.startPage(pageNum, pageSize);
 
-        OrdersPageQueryDTO ordersPageQueryDTO = new OrdersPageQueryDTO();//todo 直接在controller端封装DTO
+        OrdersPageQueryDTO ordersPageQueryDTO = new OrdersPageQueryDTO();
         ordersPageQueryDTO.setUserId(BaseContext.getCurrentId());
         ordersPageQueryDTO.setStatus(status);
 
@@ -192,6 +192,27 @@ public class OrderServiceImpl implements OrderService {
         }
         assert page != null;
         return new PageResult(page.getTotal(), list);
+    }
+
+    /**
+     * 查询订单详情
+     *
+     * @param id 订单ID
+     * @return 返回订单VO
+     */
+    public OrderVO details(Long id) {
+        // 根据id查询订单
+        Orders orders = orderMapper.getById(id);
+
+        // 查询该订单对应的菜品/套餐明细
+        List<OrderDetail> orderDetailList = orderDetailMapper.getByOrderId(orders.getId());
+
+        // 将该订单及其详情封装到OrderVO并返回
+        OrderVO orderVO = new OrderVO();
+        BeanUtils.copyProperties(orders, orderVO);
+        orderVO.setOrderDetailList(orderDetailList);
+
+        return orderVO;
     }
 
 }

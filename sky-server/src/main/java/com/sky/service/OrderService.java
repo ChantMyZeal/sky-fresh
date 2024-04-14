@@ -5,6 +5,7 @@ import com.sky.dto.OrdersSubmitDTO;
 import com.sky.result.PageResult;
 import com.sky.vo.OrderPaymentVO;
 import com.sky.vo.OrderSubmitVO;
+import com.sky.vo.OrderVO;
 
 public interface OrderService {
 
@@ -40,5 +41,13 @@ public interface OrderService {
      * @return 返回分页结果
      */
     PageResult pageQuery4User(int pageNum, int pageSize, Integer status);
+
+    /**
+     * 查询订单详情
+     *
+     * @param id 订单ID
+     * @return 返回订单VO
+     */
+    OrderVO details(Long id);
 
 }
