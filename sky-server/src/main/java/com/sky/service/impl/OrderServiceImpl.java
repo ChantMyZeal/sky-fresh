@@ -138,6 +138,14 @@ public class OrderServiceImpl implements OrderService {
      */
     @Override
     public void confirm(OrdersConfirmDTO ordersConfirmDTO) {
+        // 根据id查询订单
+        Orders ordersDB = orderMapper.getById(ordersConfirmDTO.getId());
+
+        // 订单只有存在且状态为2（待接单）才可以接单
+        if (ordersDB == null || !ordersDB.getStatus().equals(Orders.TO_BE_CONFIRMED)) {
+            throw new OrderBusinessException(MessageConstant.ORDER_STATUS_ERROR);
+        }
+
         Orders orders = Orders.builder()
                 .id(ordersConfirmDTO.getId())
                 .status(Orders.CONFIRMED)
@@ -379,8 +387,7 @@ public class OrderServiceImpl implements OrderService {
         map.put("type", 1); // 1来单提醒 2客户催单
         map.put("orderId", ordersDB.getId());
         map.put("content", "订单号：" + outTradeNo);
-        String json = JSON.toJSONString(map);
-        webSocketServer.sendToAllClient(json);
+        webSocketServer.sendToAllClient(JSON.toJSONString(map));
     }
 
     /**
@@ -515,6 +522,29 @@ public class OrderServiceImpl implements OrderService {
 
         // 将购物车对象批量添加到数据库
         shoppingCartMapper.insertBatch(shoppingCartList);
+    }
+
+    /**
+     * 用户催单
+     *
+     * @param id 订单ID
+     */
+    @Override
+    public void reminder(Long id) {
+        // 根据id查询订单
+        Orders ordersDB = orderMapper.getById(id);
+
+        // 订单只有存在且状态为2（待接单）才可以催单
+        if (ordersDB == null || !ordersDB.getStatus().equals(Orders.TO_BE_CONFIRMED)) {
+            throw new OrderBusinessException(MessageConstant.ORDER_STATUS_ERROR);
+        }
+
+        //通过websocket向客户端推送消息
+        Map<Object, Object> map = new HashMap<>();
+        map.put("type", 2); // 1来单提醒 2客户催单
+        map.put("orderId", ordersDB.getId());
+        map.put("content", "订单号：" + ordersDB.getNumber());
+        webSocketServer.sendToAllClient(JSON.toJSONString(map));
     }
 
 }
