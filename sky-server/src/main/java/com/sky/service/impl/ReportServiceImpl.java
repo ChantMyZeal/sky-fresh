@@ -1,10 +1,12 @@
 package com.sky.service.impl;
 
+import com.sky.dto.GoodsSalesDTO;
 import com.sky.entity.Orders;
 import com.sky.mapper.OrderMapper;
 import com.sky.mapper.UserMapper;
 import com.sky.service.ReportService;
 import com.sky.vo.OrderReportVO;
+import com.sky.vo.SalesTop10ReportVO;
 import com.sky.vo.TurnoverReportVO;
 import com.sky.vo.UserReportVO;
 import lombok.extern.slf4j.Slf4j;
@@ -130,6 +132,7 @@ public class ReportServiceImpl implements ReportService {//todo 考虑在mysql�
         Integer validOrderCount = validOrderCountList.stream().reduce(Integer::sum).orElseThrow();//日期区间内的有效订单数
         Double orderCompletionRate = totalOrderCount.equals(0) ? 0.0 : validOrderCount.doubleValue() / totalOrderCount;//订单完成率
 
+        //封装结果数据
         return OrderReportVO
                 .builder()
                 .dateList(StringUtils.join(dateList, ","))
@@ -138,6 +141,34 @@ public class ReportServiceImpl implements ReportService {//todo 考虑在mysql�
                 .totalOrderCount(totalOrderCount)
                 .validOrderCount(validOrderCount)
                 .orderCompletionRate(orderCompletionRate)
+                .build();
+    }
+
+    /**
+     * 统计指定日期区间内销量排名前十的商品
+     *
+     * @param begin 开始日期
+     * @param end   结束日期
+     * @return 返回销量前十报告VO
+     */
+    @Override
+    public SalesTop10ReportVO getSalesTop10(LocalDate begin, LocalDate end) {
+        //构造开始时间和结束时间，调用Mapper查询数据库
+        LocalDateTime beginTime = LocalDateTime.of(begin, LocalTime.MIN);
+        LocalDateTime endTime = LocalDateTime.of(end, LocalTime.MAX);
+        List<GoodsSalesDTO> salesTop10 = orderMapper.getSalesTop(beginTime, endTime, 10, Orders.COMPLETED);
+
+        //将查询得到的结果转换为需要返回的格式
+        List<String> names = salesTop10.stream().map(GoodsSalesDTO::getName).toList();
+        List<Integer> numbers = salesTop10.stream().map(GoodsSalesDTO::getTotal).toList();
+        String nameList = StringUtils.join(names, ",");
+        String numberList = StringUtils.join(numbers, ",");
+
+        //封装结果数据
+        return SalesTop10ReportVO
+                .builder()
+                .nameList(nameList)
+                .numberList(numberList)
                 .build();
     }
 
