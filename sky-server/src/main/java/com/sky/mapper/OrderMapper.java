@@ -72,11 +72,20 @@ public interface OrderMapper {
     /**
      * 根据下单日期和订单状态计算总金额
      *
-     * @param date   日期
+     * @param date   下单日期
      * @param status 订单状态
      * @return 返回总金额
      */
     @Select("select sum(amount) from orders where order_time like concat(#{date},'%') and status = #{status}")
     BigDecimal sumByDateAndStatus(LocalDate date, Integer status);
+
+    /**
+     * 根据下单日期和订单状态查询订单数量
+     *
+     * @param date   下单
+     * @param status 订单状态
+     * @return 返回订单数量
+     */
+    Integer countByDateAndStatus(LocalDate date, Integer status);
 
 }

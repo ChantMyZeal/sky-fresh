@@ -4,6 +4,7 @@ import com.sky.entity.Orders;
 import com.sky.mapper.OrderMapper;
 import com.sky.mapper.UserMapper;
 import com.sky.service.ReportService;
+import com.sky.vo.OrderReportVO;
 import com.sky.vo.TurnoverReportVO;
 import com.sky.vo.UserReportVO;
 import lombok.extern.slf4j.Slf4j;
@@ -97,6 +98,46 @@ public class ReportServiceImpl implements ReportService {//todo 考虑在mysql�
                 .dateList(StringUtils.join(dateList, ","))
                 .totalUserList(StringUtils.join(totalUserList, ","))
                 .newUserList(StringUtils.join(newUserList, ","))
+                .build();
+    }
+
+    /**
+     * 统计指定日期区间内的订单数据
+     *
+     * @param begin 开始日期
+     * @param end   结束日期
+     * @return 返回订单报告VO
+     */
+    @Override
+    public OrderReportVO getOrderStatistics(LocalDate begin, LocalDate end) {
+        //创建集合用于存储从begin到end范围内的日期
+        List<LocalDate> dateList = new ArrayList<>();
+        //不超过结束日期时，计算指定日期后一天的日期并加入集合中
+        for (; !begin.isAfter(end); begin = begin.plusDays(1)) {
+            dateList.add(begin);
+        }
+
+        //创建集合用于存储每日订单总数
+        List<Integer> orderCountList = new ArrayList<>();
+        //创建集合用于存储每日有效订单数
+        List<Integer> validOrderCountList = new ArrayList<>();
+        for (LocalDate date : dateList) {
+            orderCountList.add(orderMapper.countByDateAndStatus(date, null));
+            validOrderCountList.add(orderMapper.countByDateAndStatus(date, Orders.COMPLETED));
+        }
+
+        Integer totalOrderCount = orderCountList.stream().reduce(Integer::sum).orElseThrow();//日期区间内的订单总数
+        Integer validOrderCount = validOrderCountList.stream().reduce(Integer::sum).orElseThrow();//日期区间内的有效订单数
+        Double orderCompletionRate = totalOrderCount.equals(0) ? 0.0 : validOrderCount.doubleValue() / totalOrderCount;//订单完成率
+
+        return OrderReportVO
+                .builder()
+                .dateList(StringUtils.join(dateList, ","))
+                .orderCountList(StringUtils.join(orderCountList, ","))
+                .validOrderCountList(StringUtils.join(validOrderCountList, ","))
+                .totalOrderCount(totalOrderCount)
+                .validOrderCount(validOrderCount)
+                .orderCompletionRate(orderCompletionRate)
                 .build();
     }
 
