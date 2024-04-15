@@ -36,7 +36,7 @@ public class DishController {
      */
     @GetMapping("/list")
     @Operation(summary = "根据分类id查询菜品")
-    public Result<List<DishVO>> list(Long categoryId) {
+    public Result<List<DishVO>> list(Long categoryId) {//todo 优化为使用 spring cache
         //构造redis中的key，规则：dish_分类ID
         String key = "dish_" + categoryId;
         //查询redis中是否存在菜品数据

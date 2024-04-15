@@ -6,6 +6,8 @@ import com.sky.entity.Orders;
 import org.apache.ibatis.annotations.Mapper;
 import org.apache.ibatis.annotations.Select;
 
+import java.math.BigDecimal;
+import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.List;
 
@@ -66,5 +68,15 @@ public interface OrderMapper {
      */
     @Select("select * from orders where status = #{status} and order_time < #{orderTime}")
     List<Orders> getByStatusAndOrderTimeLT(Integer status, LocalDateTime orderTime);
+
+    /**
+     * 根据下单日期和订单状态计算总金额
+     *
+     * @param date   日期
+     * @param status 订单状态
+     * @return 返回总金额
+     */
+    @Select("select sum(amount) from orders where order_time like concat(#{date},'%') and status = #{status}")
+    BigDecimal sumByDateAndStatus(LocalDate date, Integer status);
 
 }
