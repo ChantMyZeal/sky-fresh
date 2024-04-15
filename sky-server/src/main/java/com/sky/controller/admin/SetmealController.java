@@ -90,26 +90,25 @@ public class SetmealController {
      * @return 返回统一响应结果
      */
     @PutMapping
-    @Operation(summary = "修改套餐")// todo 考虑是否添加启售中的套餐无法修改的逻辑
-    @CacheEvict(cacheNames = "setmealCache", allEntries = true)
-    public Result<String> update(@RequestBody SetmealDTO setmealDTO) {
+    @Operation(summary = "修改套餐")
+    public Result<String> update(@RequestBody SetmealDTO setmealDTO) {// todo 前端增加接受error异常提示：启售中的套餐不能删除或修改
         log.info("修改套餐：{}", setmealDTO);
         setmealService.update(setmealDTO);
         return Result.success();
     }
 
     /**
-     * 起售或停售套餐
+     * 启售或停售套餐
      *
      * @param status 套餐状态参数
      * @param id     套餐ID
      * @return 返回统一响应结果
      */
     @PostMapping("/status/{status}")
-    @Operation(summary = "起售或停售套餐")
+    @Operation(summary = "启售或停售套餐")
     @CacheEvict(cacheNames = "setmealCache", allEntries = true)
     public Result<String> startOrStop(@PathVariable Integer status, Long id) {
-        log.info("起售或停售套餐：{},{}", status, id);
+        log.info("启售或停售套餐：{},{}", status, id);
         setmealService.startOrStop(status, id);
         return Result.success();
     }

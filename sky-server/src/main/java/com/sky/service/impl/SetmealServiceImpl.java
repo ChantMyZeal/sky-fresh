@@ -155,13 +155,20 @@ public class SetmealServiceImpl implements SetmealService {
     @Override
     @Transactional
     public void update(SetmealDTO setmealDTO) {
+        //获取套餐ID
+        Long setmealId = setmealDTO.getId();
+
+        //封装为单例列表，复用批量查询接口，判断套餐是否满足修改条件——是否已经起售
+        Long enabledSetmealCount = setmealMapper.getCountByIdsAndStatus(Collections.singletonList(setmealId), StatusConstant.ENABLE);
+        if (enabledSetmealCount > 0) {
+            //套餐起售中，不能修改
+            throw new DeletionNotAllowedException(MessageConstant.SETMEAL_ON_SALE);
+        }
+
         //修改套餐基本信息
         Setmeal setmeal = new Setmeal();
         BeanUtils.copyProperties(setmealDTO, setmeal);
         setmealMapper.update(setmeal);
-
-        //获取套餐ID
-        Long setmealId = setmealDTO.getId();
 
         //封装为单例列表，复用批量删除接口，删除套餐和菜品的关联关系
         setmealDishMapper.deleteBySetmealIds(Collections.singletonList(setmealId));

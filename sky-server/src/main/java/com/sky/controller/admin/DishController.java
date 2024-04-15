@@ -12,11 +12,9 @@ import io.swagger.v3.oas.annotations.tags.Tag;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.cache.annotation.CacheEvict;
-import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
-import java.util.Set;
 
 /**
  * 菜品管理
@@ -29,21 +27,6 @@ public class DishController {
 
     @Autowired
     private DishService dishService;
-    @Autowired
-    private RedisTemplate<String, Object> redisTemplate;
-
-    /**
-     * 清理缓存数据
-     *
-     * @param pattern 字符串匹配
-     */
-    private void cleanCache(String pattern) {// todo 优化到service层中
-        //将指定的缓存数据，即pattern匹配的key清理掉
-        Set<String> keys = redisTemplate.keys(pattern);
-        if (keys != null && !keys.isEmpty()) {
-            redisTemplate.delete(keys);
-        }
-    }
 
     /**
      * 新增菜品
@@ -108,13 +91,9 @@ public class DishController {
      * @return 返回统一响应结果
      */
     @PutMapping
-    @Operation(summary = "修改菜品")// todo 考虑是否添加启售中的菜品无法修改的逻辑
+    @Operation(summary = "修改菜品")
     public Result<String> update(@RequestBody DishDTO dishDTO) {
         log.info("修改菜品：{}", dishDTO);
-
-        //将所有的菜品缓存数据清理掉
-        cleanCache("dish_*");
-
         dishService.updateWithFlavor(dishDTO);
         return Result.success();
     }
@@ -140,14 +119,10 @@ public class DishController {
      * @return 返回统一响应结果
      */
     @PostMapping("/status/{status}")
-    @Operation(summary = "启售或禁售菜品")
-    @CacheEvict(cacheNames = "setmealCache", allEntries = true)//也要清除套餐的缓存 todo 看能否优化到service层中
+    @Operation(summary = "启售或停售菜品")
+    @CacheEvict(cacheNames = {"dishCache", "setmealCache"}, allEntries = true)//也要清除套餐的缓存 todo 看能否优化到service层中
     public Result<String> startOrStop(@PathVariable Integer status, Long id) {
-        log.info("启售或禁售菜品：{},{}", status, id);
-
-        //将所有的菜品缓存数据清理掉
-        cleanCache("dish_*");
-
+        log.info("启售或停售菜品：{},{}", status, id);
         dishService.startOrStop(status, id);
         return Result.success();
     }

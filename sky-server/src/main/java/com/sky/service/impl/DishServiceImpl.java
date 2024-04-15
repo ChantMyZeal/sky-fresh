@@ -164,13 +164,20 @@ public class DishServiceImpl implements DishService {
     @Override
     @Transactional
     public void updateWithFlavor(DishDTO dishDTO) {
+        //获取菜品ID
+        Long dishId = dishDTO.getId();
+
+        //封装为单例列表，复用批量查询接口，判断菜品是否满足修改条件——是否已经起售
+        Long enabledDishCount = dishMapper.getCountByIdsAndStatus(Collections.singletonList(dishId), StatusConstant.ENABLE);
+        if (enabledDishCount > 0) {
+            //菜品起售中，不能修改
+            throw new DeletionNotAllowedException(MessageConstant.DISH_ON_SALE);
+        }
+
         //修改菜品基本信息
         Dish dish = new Dish();
         BeanUtils.copyProperties(dishDTO, dish);
         dishMapper.update(dish);
-
-        //获取菜品ID
-        Long dishId = dishDTO.getId();
 
         //封装为单例列表，复用批量删除接口，删除原有的口味数据
         dishFlavorMapper.deleteByDishIds(Collections.singletonList(dishId));
