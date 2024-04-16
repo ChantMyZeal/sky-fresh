@@ -16,13 +16,13 @@ import java.util.List;
 public interface DishMapper {
 
     /**
-     * 根据分类ID查询菜品数量
+     * 根据分类ID和菜品状态查询菜品数量
      *
      * @param categoryId 分类ID
+     * @param status     菜品状态
      * @return 返回菜品数量查询结果
      */
-    @Select("select count(id) from dish where category_id = #{categoryId}")
-    Integer countByCategoryId(Long categoryId);
+    Integer countByCategoryIdAndStatus(Long categoryId, Integer status);
 
     /**
      * 新增菜品
@@ -56,7 +56,7 @@ public interface DishMapper {
      * @param status 状态参数
      * @return 返回满足条件的菜品数量
      */
-    Long getCountByIdsAndStatus(List<Long> ids, Integer status);
+    Long countByIdsAndStatus(List<Long> ids, Integer status);
 
     /**
      * 根据菜品ID集合批量删除菜品
@@ -108,6 +108,6 @@ public interface DishMapper {
      * @param status    状态参数
      * @return 返回满足条件的菜品数量
      */
-    Long getCountBySetmealIdAndStatus(Long setmealId, Integer status);
+    Long countBySetmealIdAndStatus(Long setmealId, Integer status);
 
 }

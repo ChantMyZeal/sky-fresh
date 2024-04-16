@@ -3,6 +3,19 @@
         "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
 <mapper namespace="com.sky.mapper.DishMapper">
 
+    <select id="countByCategoryIdAndStatus" resultType="java.lang.Integer">
+        select count(id)
+        from dish
+        <where>
+            <if test="categoryId != null">
+                and category_id = #{categoryId}
+            </if>
+            <if test="status != null">
+                and status = #{status}
+            </if>
+        </where>
+    </select>
+
     <insert id="insert" useGeneratedKeys="true" keyProperty="id">
         insert
         into dish
@@ -31,7 +44,7 @@
         order by d.create_time desc
     </select>
 
-    <select id="getCountByIdsAndStatus" resultType="java.lang.Long">
+    <select id="countByIdsAndStatus" resultType="java.lang.Long">
         select count(*)
         from dish
         where id in
@@ -97,7 +110,7 @@
         order by create_time desc
     </select>
 
-    <select id="getCountBySetmealIdAndStatus" resultType="java.lang.Long">
+    <select id="countBySetmealIdAndStatus" resultType="java.lang.Long">
         select count(status)
         from dish a
                  right join setmeal_dish b

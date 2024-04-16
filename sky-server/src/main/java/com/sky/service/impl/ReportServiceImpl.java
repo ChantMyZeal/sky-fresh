@@ -61,9 +61,7 @@ public class ReportServiceImpl implements ReportService {//todo 考虑在mysql�
         //查询集合中每个日期对应的营业额数据，即状态为已完成的订单总金额
         for (LocalDate date : dateList) {
             BigDecimal turnover = orderMapper.sumByDateAndStatus(date, Orders.COMPLETED);
-            if (turnover == null) {
-                turnover = BigDecimal.valueOf(0.0);
-            }
+            if (turnover == null) turnover = BigDecimal.valueOf(0.0);
             turnoverList.add(turnover);
         }
 

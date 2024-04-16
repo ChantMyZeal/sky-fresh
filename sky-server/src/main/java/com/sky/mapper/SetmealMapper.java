@@ -16,13 +16,13 @@ import java.util.List;
 public interface SetmealMapper {
 
     /**
-     * 根据分类ID查询套餐的数量
+     * 根据分类ID和套餐状态查询套餐的数量
      *
-     * @param id 分类ID
+     * @param categoryId 分类ID
+     * @param status     套餐状态
      * @return 返回套餐数量查询结果
      */
-    @Select("select count(id) from setmeal where category_id = #{categoryId}")
-    Integer countByCategoryId(Long id);
+    Integer countByCategoryIdAndStatus(Long categoryId, Integer status);
 
     /**
      * 新增套餐

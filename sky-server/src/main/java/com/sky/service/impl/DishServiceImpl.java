@@ -104,7 +104,7 @@ public class DishServiceImpl implements DishService {
     @Transactional
     public void deleteBatch(List<Long> ids) {
         //判断集合中的菜品是否满足删除条件——是否已经起售
-        Long enabledDishCount = dishMapper.getCountByIdsAndStatus(ids, StatusConstant.ENABLE);
+        Long enabledDishCount = dishMapper.countByIdsAndStatus(ids, StatusConstant.ENABLE);
         if (enabledDishCount > 0) {
             //有菜品起售中，不能删除
             throw new DeletionNotAllowedException(MessageConstant.DISH_ON_SALE);
@@ -168,7 +168,7 @@ public class DishServiceImpl implements DishService {
         Long dishId = dishDTO.getId();
 
         //封装为单例列表，复用批量查询接口，判断菜品是否满足修改条件——是否已经起售
-        Long enabledDishCount = dishMapper.getCountByIdsAndStatus(Collections.singletonList(dishId), StatusConstant.ENABLE);
+        Long enabledDishCount = dishMapper.countByIdsAndStatus(Collections.singletonList(dishId), StatusConstant.ENABLE);
         if (enabledDishCount > 0) {
             //菜品起售中，不能修改
             throw new DeletionNotAllowedException(MessageConstant.DISH_ON_SALE);

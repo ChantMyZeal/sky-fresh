@@ -3,6 +3,20 @@
         "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
 <mapper namespace="com.sky.mapper.SetmealMapper">
 
+    <select id="countByCategoryIdAndStatus" resultType="java.lang.Integer">
+        select count(id)
+        from setmeal
+        <where>
+            <if test="categoryId != null">
+                and category_id = #{categoryId}
+            </if>
+            <if test="status != null">
+                and status = #{status}
+            </if>
+        </where>
+
+    </select>
+
     <insert id="insert" parameterType="Setmeal" useGeneratedKeys="true" keyProperty="id">
         insert
         into setmeal
