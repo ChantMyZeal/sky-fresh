@@ -56,6 +56,8 @@ logging:
         controller: info
 
 sky:
+  shop:
+    address: 广州市番禺区大学城外环东路382号 #商家地址
   jwt:
     # 设置jwt签名加密时使用的秘钥
     admin-secret-key: skytakeout
@@ -70,17 +72,19 @@ sky:
     # 设置jwt签名加密时使用的秘钥
     user-token-name: authentication
   alioss:
-    endpoint: ${sky.alioss.endpoint}
-    access-key-id: ${sky.alioss.access-key-id}
-    access-key-secret: ${sky.alioss.access-key-secret}
-    bucket-name: ${sky.alioss.bucket-name}
+    endpoint: ${sky.alioss.endpoint} #阿里云OSS-Bucket-概览-访问端口-Endpoint
+    access-key-id: ${sky.alioss.access-key-id} #旧版直接配置AccessKeyId
+    access-key-secret: ${sky.alioss.access-key-secret} #旧版直接配置AccessKeySecret
+    bucket-name: ${sky.alioss.bucket-name} #阿里云OSS-Bucket-概览-基本信息-存储空间名称
   wechat:
-    appid: ${sky.wechat.appid}
-    secret: ${sky.wechat.secret}
-    mchid: ${sky.wechat.mchid}
-    mch-serial-no: ${sky.wechat.mch-serial-no}
-    private-key-file-path: ${sky.wechat.private-key-file-path}
-    api-v3-key: ${sky.wechat.api-v3-key}
-    we-chat-pay-cert-file-path: ${sky.wechat.we-chat-pay-cert-file-path}
-    notify-url: ${sky.wechat.notify-url}
-    refund-notify-url: ${sky.wechat.refund-notify-url}
+    appid: ${sky.wechat.appid} #微信小程序的APPID
+    secret: ${sky.wechat.secret} #微信小程序的密钥
+    mchid: ${sky.wechat.mchid} #微信商户号
+    mch-serial-no: ${sky.wechat.mch-serial-no} #微信商户API证书序列号
+    private-key-file-path: ${sky.wechat.private-key-file-path} #微信商户私钥文件路径
+    api-v3-key: ${sky.wechat.api-v3-key} #微信商户API证书解密的密钥
+    we-chat-pay-cert-file-path: ${sky.wechat.we-chat-pay-cert-file-path} #微信支付平台证书
+    notify-url: ${sky.wechat.notify-url} #支付成功的回调地址
+    refund-notify-url: ${sky.wechat.refund-notify-url} #退款成功的回调地址
+  baidu:
+    ak: ${sky.baidu.ak} #百度地图API应用的AccessKey

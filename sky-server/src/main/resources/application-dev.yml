@@ -32,3 +32,5 @@ sky:
     we-chat-pay-cert-file-path: #微信支付平台证书
     notify-url: #支付成功的回调地址
     refund-notify-url: #退款成功的回调地址
+  baidu:
+    ak: pLLUBfMaKPTBQcHkcVWjpzSxRS4MWDEp #百度地图API应用的AccessKey
