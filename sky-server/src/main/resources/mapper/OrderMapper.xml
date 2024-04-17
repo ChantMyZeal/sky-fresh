@@ -72,6 +72,35 @@
         order by order_time desc
     </select>
 
+    <select id="sumByDateAndStatus" resultType="java.math.BigDecimal">
+        select sum(amount)
+        from orders
+        <where>
+            <if test="date != null">
+                and order_time like concat(#{date},'%')
+            </if>
+            <if test="status != null">
+                and status = #{status}
+            </if>
+        </where>
+    </select>
+
+    <select id="sumByStatusAndTimeRange" resultType="java.math.BigDecimal">
+        select sum(amount)
+        from orders
+        <where>
+            <if test="status != null">
+                and status = #{status}
+            </if>
+            <if test="begin != null">
+                and order_time &gt;= #{begin}
+            </if>
+            <if test="end != null">
+                and order_time &lt;= #{end}
+            </if>
+        </where>
+    </select>
+
     <select id="countByDateAndStatus" resultType="java.lang.Integer">
         select count(id)
         from orders
@@ -81,6 +110,22 @@
             </if>
             <if test="status != null">
                 and status = #{status}
+            </if>
+        </where>
+    </select>
+
+    <select id="countByStatusAndTimeRange" resultType="java.lang.Integer">
+        select count(id)
+        from orders
+        <where>
+            <if test="status != null">
+                and status = #{status}
+            </if>
+            <if test="begin != null">
+                and order_time &gt;= #{begin}
+            </if>
+            <if test="end != null">
+                and order_time &lt;= #{end}
             </if>
         </where>
     </select>

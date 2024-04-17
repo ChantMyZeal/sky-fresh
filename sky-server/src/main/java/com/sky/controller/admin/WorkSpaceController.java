@@ -14,6 +14,9 @@ import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
+import java.time.LocalDate;
+import java.time.LocalTime;
+
 /**
  * 工作台
  */
@@ -35,19 +38,21 @@ public class WorkSpaceController {// todo 前端定时自动请求或用websocke
     @Operation(summary = "工作台今日数据查询")
     public Result<BusinessDataVO> businessData() {
         log.info("工作台今日数据查询...");
-        return Result.success(workspaceService.getBusinessData());
+        LocalDate today = LocalDate.now();
+        return Result.success(workspaceService.getBusinessData(today.atTime(LocalTime.MIN), today.atTime(LocalTime.MAX)));
     }
 
     /**
-     * 查询订单总览数据
+     * 查询今日订单总览数据
      *
      * @return 返回统一响应结果
      */
     @GetMapping("/overviewOrders")
-    @Operation(summary = "查询订单总览数据")
+    @Operation(summary = "查询今日订单总览数据")
     public Result<OrderOverViewVO> orderOverView() {
-        log.info("查询订单总览数据...");
-        return Result.success(workspaceService.getOrderOverView());
+        log.info("查询今日订单总览数据...");
+        LocalDate today = LocalDate.now();
+        return Result.success(workspaceService.getOrderOverView(today.atTime(LocalTime.MIN), today.atTime(LocalTime.MAX)));
     }
 
     /**

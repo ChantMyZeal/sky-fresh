@@ -17,9 +17,7 @@ import org.springframework.stereotype.Service;
 
 import java.math.BigDecimal;
 import java.math.RoundingMode;
-import java.time.LocalDate;
 import java.time.LocalDateTime;
-import java.time.LocalTime;
 
 @Service
 @Slf4j
@@ -35,29 +33,27 @@ public class WorkspaceServiceImpl implements WorkspaceService {
     private SetmealMapper setmealMapper;
 
     /**
-     * 根据时间段统计营业数据
+     * 根据时间范围统计各项营业数据
      *
+     * @param begin 开始时间
+     * @param end   结束时间
      * @return 返回营业数据VO
      */
     @Override
-    public BusinessDataVO getBusinessData() {
-        LocalDate date = LocalDate.now();
-        LocalDateTime beginTime = LocalDateTime.of(date, LocalTime.MIN);
-        LocalDateTime endTime = LocalDateTime.of(date, LocalTime.MAX);
-
+    public BusinessDataVO getBusinessData(LocalDateTime begin, LocalDateTime end) {
         //总订单数
-        Integer totalOrderCount = orderMapper.countByDateAndStatus(date, null);
-        //营业额：当日已完成订单的总金额
-        BigDecimal turnover = orderMapper.sumByDateAndStatus(date, Orders.COMPLETED);
+        Integer totalOrderCount = orderMapper.countByStatusAndTimeRange(null, begin, end);
+        //营业额：已完成订单的总金额
+        BigDecimal turnover = orderMapper.sumByStatusAndTimeRange(Orders.COMPLETED, begin, end);
         if (turnover == null) turnover = BigDecimal.valueOf(0.0);
-        //有效订单数：当日已完成订单的数量
-        Integer validOrderCount = orderMapper.countByDateAndStatus(date, Orders.COMPLETED);
+        //有效订单数：已完成订单的数量
+        Integer validOrderCount = orderMapper.countByStatusAndTimeRange(Orders.COMPLETED, begin, end);
         //订单完成率：有效订单数 / 总订单数
         Double orderCompletionRate = totalOrderCount.equals(0) ? 0.0 : validOrderCount.doubleValue() / totalOrderCount;
         //平均客单价：营业额 / 有效订单数
         BigDecimal unitPrice = validOrderCount.equals(0) ? BigDecimal.valueOf(0.0) : turnover.divide(BigDecimal.valueOf(validOrderCount), 2, RoundingMode.HALF_UP);
-        //新增用户数：当日新增用户的数量
-        Integer newUsers = userMapper.countByTimeRange(beginTime, endTime);
+        //新增用户数
+        Integer newUsers = userMapper.countByTimeRange(begin, end);
 
         return BusinessDataVO.builder()
                 .turnover(turnover.doubleValue())
@@ -69,18 +65,19 @@ public class WorkspaceServiceImpl implements WorkspaceService {
     }
 
     /**
-     * 查询订单总览数据
+     * 根据时间范围统计订单总览数据
      *
+     * @param begin 开始时间
+     * @param end   结束时间
      * @return 返回订单总览VO
      */
     @Override
-    public OrderOverViewVO getOrderOverView() {
-        LocalDate date = LocalDate.now();
-        Integer waitingOrders = orderMapper.countByDateAndStatus(date, Orders.TO_BE_CONFIRMED);//待接单的订单数
-        Integer deliveredOrders = orderMapper.countByDateAndStatus(date, Orders.CONFIRMED);//待派送的订单数
-        Integer completedOrders = orderMapper.countByDateAndStatus(date, Orders.COMPLETED);//已完成的订单数
-        Integer cancelledOrders = orderMapper.countByDateAndStatus(date, Orders.CANCELLED);//已取消的订单数
-        Integer allOrders = orderMapper.countByDateAndStatus(date, null);//总订单数
+    public OrderOverViewVO getOrderOverView(LocalDateTime begin, LocalDateTime end) {
+        Integer waitingOrders = orderMapper.countByStatusAndTimeRange(Orders.TO_BE_CONFIRMED, begin, end);//待接单的订单数
+        Integer deliveredOrders = orderMapper.countByStatusAndTimeRange(Orders.CONFIRMED, begin, end);//待派送的订单数
+        Integer completedOrders = orderMapper.countByStatusAndTimeRange(Orders.COMPLETED, begin, end);//已完成的订单数
+        Integer cancelledOrders = orderMapper.countByStatusAndTimeRange(Orders.CANCELLED, begin, end);//已取消的订单数
+        Integer allOrders = orderMapper.countByStatusAndTimeRange(null, begin, end);//总订单数
 
         return OrderOverViewVO.builder()
                 .waitingOrders(waitingOrders)

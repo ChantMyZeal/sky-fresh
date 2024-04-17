@@ -77,8 +77,17 @@ public interface OrderMapper {
      * @param status 订单状态
      * @return 返回总金额
      */
-    @Select("select sum(amount) from orders where order_time like concat(#{date},'%') and status = #{status}")
     BigDecimal sumByDateAndStatus(LocalDate date, Integer status);
+
+    /**
+     * 根据订单状态和下单时间范围计算总金额
+     *
+     * @param status 订单状态
+     * @param begin  开始时间
+     * @param end    结束时间
+     * @return 返回总金额
+     */
+    BigDecimal sumByStatusAndTimeRange(Integer status, LocalDateTime begin, LocalDateTime end);
 
     /**
      * 根据下单日期和订单状态查询订单数量
@@ -88,6 +97,16 @@ public interface OrderMapper {
      * @return 返回订单数量
      */
     Integer countByDateAndStatus(LocalDate date, Integer status);
+
+    /**
+     * 根据订单状态和下单时间范围查询订单数量
+     *
+     * @param status 订单状态
+     * @param begin  开始时间
+     * @param end    结束时间
+     * @return 返回订单数量
+     */
+    Integer countByStatusAndTimeRange(Integer status, LocalDateTime begin, LocalDateTime end);
 
     /**
      * 统计指定订单状态和时间区间内销量处于前几名的商品及其销量
