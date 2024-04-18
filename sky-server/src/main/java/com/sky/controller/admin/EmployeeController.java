@@ -49,6 +49,7 @@ public class EmployeeController {
     @PostMapping("/logout")
     @Operation(summary = "员工退出")
     public Result<String> logout() {
+        log.info("员工退出...");
         employeeService.logout();
         return Result.success();
     }

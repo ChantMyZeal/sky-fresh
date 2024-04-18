@@ -13,4 +13,9 @@ public interface UserService {
      */
     UserLoginVO wxLogin(UserLoginDTO userLoginDTO);
 
+    /**
+     * 退出登录
+     */
+    void logout();
+
 }

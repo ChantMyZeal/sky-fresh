@@ -4,6 +4,7 @@ import com.alibaba.fastjson2.JSON;
 import com.alibaba.fastjson2.JSONObject;
 import com.sky.constant.JwtClaimsConstant;
 import com.sky.constant.MessageConstant;
+import com.sky.context.BaseContext;
 import com.sky.dto.UserLoginDTO;
 import com.sky.entity.User;
 import com.sky.exception.LoginFailedException;
@@ -91,6 +92,15 @@ public class UserServiceImpl implements UserService {
                 .openid(user.getOpenid())
                 .token(token)
                 .build();
+    }
+
+    /**
+     * 退出登录
+     */
+    @Override
+    public void logout() {
+        //手动删除ThreadLocal线程局部变量，防止内存泄漏
+        BaseContext.removeCurrentId();
     }
 
 }
