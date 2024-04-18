@@ -3,6 +3,7 @@ package com.sky.service;
 import com.sky.dto.EmployeeDTO;
 import com.sky.dto.EmployeeLoginDTO;
 import com.sky.dto.EmployeePageQueryDTO;
+import com.sky.dto.PasswordEditDTO;
 import com.sky.entity.Employee;
 import com.sky.result.PageResult;
 
@@ -12,7 +13,7 @@ public interface EmployeeService {
      * 员工登录
      *
      * @param employeeLoginDTO 员工登录DTO
-     * @return 返回实体对象
+     * @return 返回员工实体对象
      */
     Employee login(EmployeeLoginDTO employeeLoginDTO);
 
@@ -20,6 +21,13 @@ public interface EmployeeService {
      * 退出登录
      */
     void logout();
+
+    /**
+     * 修改密码
+     *
+     * @param passwordEditDTO 密码编辑DTO
+     */
+    void editPassword(PasswordEditDTO passwordEditDTO);
 
     /**
      * 新增员工

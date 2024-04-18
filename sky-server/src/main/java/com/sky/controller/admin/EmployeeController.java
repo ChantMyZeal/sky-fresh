@@ -4,6 +4,7 @@ import com.sky.constant.JwtClaimsConstant;
 import com.sky.dto.EmployeeDTO;
 import com.sky.dto.EmployeeLoginDTO;
 import com.sky.dto.EmployeePageQueryDTO;
+import com.sky.dto.PasswordEditDTO;
 import com.sky.entity.Employee;
 import com.sky.properties.JwtProperties;
 import com.sky.result.PageResult;
@@ -75,6 +76,20 @@ public class EmployeeController {
     @Operation(summary = "员工退出")
     public Result<String> logout() {
         employeeService.logout();
+        return Result.success();
+    }
+
+    /**
+     * 修改密码
+     *
+     * @param passwordEditDTO 密码编辑DTO
+     * @return 返回统一响应结果
+     */
+    @PutMapping("/editPassword")
+    @Operation(summary = "修改密码")
+    public Result<String> editPassword(@RequestBody PasswordEditDTO passwordEditDTO) {
+        log.info("修改密码，员工ID：{}", passwordEditDTO.getEmpId());
+        employeeService.editPassword(passwordEditDTO);
         return Result.success();
     }
 
