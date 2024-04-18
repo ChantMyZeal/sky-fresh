@@ -1,16 +1,19 @@
 package com.sky.service.impl;
 
-
 import com.alibaba.fastjson2.JSON;
 import com.alibaba.fastjson2.JSONObject;
+import com.sky.constant.JwtClaimsConstant;
 import com.sky.constant.MessageConstant;
 import com.sky.dto.UserLoginDTO;
 import com.sky.entity.User;
 import com.sky.exception.LoginFailedException;
 import com.sky.mapper.UserMapper;
+import com.sky.properties.JwtProperties;
 import com.sky.properties.WeChatProperties;
 import com.sky.service.UserService;
 import com.sky.utils.HttpClientUtil;
+import com.sky.utils.JwtUtil;
+import com.sky.vo.UserLoginVO;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -27,6 +30,8 @@ public class UserServiceImpl implements UserService {
     public static final String WX_LOGIN = "https://api.weixin.qq.com/sns/jscode2session";
     @Autowired
     private WeChatProperties weChatProperties;
+    @Autowired
+    private JwtProperties jwtProperties;
     @Autowired
     private UserMapper userMapper;
 
@@ -52,10 +57,10 @@ public class UserServiceImpl implements UserService {
      * 微信登录
      *
      * @param userLoginDTO 用户登录DTO
-     * @return 返回用户实体对象
+     * @return 返回用户登录VO
      */
     @Override
-    public User wxLogin(UserLoginDTO userLoginDTO) {
+    public UserLoginVO wxLogin(UserLoginDTO userLoginDTO) {
         String openid = getOpenid(userLoginDTO.getCode());
 
         //判断openid是否为空，如果为空表示登录失败，抛出业务异常
@@ -75,8 +80,17 @@ public class UserServiceImpl implements UserService {
             userMapper.insert(user);
         }
 
+        //为微信用户生成jwt令牌
+        Map<String, Object> claims = new HashMap<>();
+        claims.put(JwtClaimsConstant.USER_ID, user.getId());
+        String token = JwtUtil.createJWT(jwtProperties.getUserSecretKey(), jwtProperties.getUserTtl(), claims);
+
         //返回这个用户对象
-        return user;
+        return UserLoginVO.builder()
+                .id(user.getId())
+                .openid(user.getOpenid())
+                .token(token)
+                .build();
     }
 
 }
