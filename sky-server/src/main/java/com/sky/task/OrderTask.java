@@ -1,5 +1,6 @@
 package com.sky.task;
 
+import com.sky.constant.MessageConstant;
 import com.sky.entity.Orders;
 import com.sky.mapper.OrderMapper;
 import lombok.extern.slf4j.Slf4j;
@@ -30,7 +31,7 @@ public class OrderTask {
         if (ordersList != null && !ordersList.isEmpty()) {
             for (Orders orders : ordersList) {
                 orders.setStatus(Orders.CANCELLED);
-                orders.setCancelReason("订单超时，自动取消");// todo 添加到常量类中
+                orders.setCancelReason(MessageConstant.ORDER_TIMEOUT);
                 orders.setCancelTime(LocalDateTime.now());
                 orderMapper.update(orders);
             }
