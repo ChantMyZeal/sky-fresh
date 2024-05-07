@@ -6,6 +6,7 @@ import com.alibaba.fastjson.JSONObject;
 import com.github.pagehelper.Page;
 import com.github.pagehelper.PageHelper;
 import com.sky.constant.MessageConstant;
+import com.sky.constant.StatusConstant;
 import com.sky.context.BaseContext;
 import com.sky.dto.*;
 import com.sky.entity.*;
@@ -15,6 +16,7 @@ import com.sky.exception.ShoppingCartBusinessException;
 import com.sky.mapper.*;
 import com.sky.result.PageResult;
 import com.sky.service.OrderService;
+import com.sky.service.ShopService;
 import com.sky.utils.HttpClientUtil;
 import com.sky.utils.WeChatPayUtil;
 import com.sky.vo.OrderPaymentVO;
@@ -52,11 +54,13 @@ public class OrderServiceImpl implements OrderService {
     @Autowired
     private ShoppingCartMapper shoppingCartMapper;
     @Autowired
+    private WebSocketServer webSocketServer;
+    @Autowired
+    private ShopService shopService;
+    @Autowired
     private UserMapper userMapper;
     @Autowired
     private WeChatPayUtil weChatPayUtil;
-    @Autowired
-    private WebSocketServer webSocketServer;
 
     /**
      * 检查用户的收货地址是否超出配送范围
@@ -351,16 +355,11 @@ public class OrderServiceImpl implements OrderService {
     @Override
     @Transactional
     public OrderSubmitVO submitOrder(OrdersSubmitDTO ordersSubmitDTO) {
-
-        //处理各种业务异常（地址簿为空，购物车为空）
-        AddressBook addressBook = addressBookMapper.getById(ordersSubmitDTO.getAddressBookId());//查询当前用户的地址簿数据
-        if (addressBook == null) {
-            throw new AddressBookBusinessException(MessageConstant.ADDRESS_BOOK_IS_NULL);//抛出业务异常
+        //处理各种业务异常（店铺已打烊，地址簿为空，购物车为空）
+        Integer status = shopService.getStatus();//查询店铺营业状态
+        if (Objects.equals(status, StatusConstant.DISABLE)) {
+            throw new OrderBusinessException(MessageConstant.SHOP_CLOSED);//抛出业务异常
         }
-
-        //检查用户收货地址是否超出配送范围（单位：千米）
-        Double range = 1000.0;// todo 在redis或mysql设置配送范围以便修改，添加查询与修改配送范围的接口
-        checkOutOfRange(addressBook.getCityName() + addressBook.getDistrictName() + addressBook.getDetail(), range);
 
         Long userId = BaseContext.getCurrentId();
         ShoppingCart shoppingCart = new ShoppingCart();
@@ -369,6 +368,15 @@ public class OrderServiceImpl implements OrderService {
         if (shoppingCartList == null || shoppingCartList.isEmpty()) {
             throw new ShoppingCartBusinessException(MessageConstant.SHOPPING_CART_IS_NULL);//抛出业务异常
         }
+
+        AddressBook addressBook = addressBookMapper.getById(ordersSubmitDTO.getAddressBookId());//查询当前用户的地址簿数据
+        if (addressBook == null) {
+            throw new AddressBookBusinessException(MessageConstant.ADDRESS_BOOK_IS_NULL);//抛出业务异常
+        }
+
+        //检查用户收货地址是否超出配送范围（单位：千米）
+        Double range = 1000.0;// todo 在redis或mysql设置配送范围以便修改，添加查询与修改配送范围的接口
+        checkOutOfRange(addressBook.getCityName() + addressBook.getDistrictName() + addressBook.getDetail(), range);
 
         //向订单表插入1条数据
         Orders orders = new Orders();

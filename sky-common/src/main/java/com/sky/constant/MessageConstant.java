@@ -32,5 +32,6 @@ public class MessageConstant {
     public static final String USER_ADDRESS_OUT_OF_RANGE = "超出配送范围";
     public static final String ORDER_CANCELLED_BY_USER = "用户自行取消";
     public static final String APPLY_FOR_REFUND = "申请退款...";
+    public static final String SHOP_CLOSED = "店铺已打烊";
 
 }
