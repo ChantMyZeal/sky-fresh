@@ -25,6 +25,29 @@ public class BaiduMapUtil {
     private String ak;
 
     /**
+     * 根据地址信息查询经纬度坐标
+     *
+     * @param map      查询参数
+     * @param eMessage 抛出异常时显示的信息
+     * @return 返回经纬度坐标
+     * @throws MapException 抛出异常
+     */
+    public String getLngLat(Map<String, String> map, String eMessage) throws MapException {
+        //查询坐标
+        String coordinate = HttpClientUtil.doGet("https://api.map.baidu.com/geocoding/v3", map);
+        JSONObject jsonObject = JSON.parseObject(coordinate);
+        if (!jsonObject.getString("status").equals("0")) {
+            throw new MapException(eMessage);
+        }
+        //数据解析
+        JSONObject location = jsonObject.getJSONObject("result").getJSONObject("location");
+        String lat = location.getString("lat");
+        String lng = location.getString("lng");
+        //返回结果
+        return lat + "," + lng;
+    }
+
+    /**
      * 检查用户的收货地址是否超出配送范围
      *
      * @param address 用户收货地址
@@ -35,40 +58,19 @@ public class BaiduMapUtil {
         map.put("address", shopAddress);
         map.put("output", "json");
         map.put("ak", ak);
-
         //获取店铺的经纬度坐标
-        String shopCoordinate = HttpClientUtil.doGet("https://api.map.baidu.com/geocoding/v3", map);
-        JSONObject jsonObject = JSON.parseObject(shopCoordinate);
-        if (!jsonObject.getString("status").equals("0")) {
-            throw new MapException(MessageConstant.SHOP_ADDRESS_FAILED);
-        }
-        //数据解析
-        JSONObject location = jsonObject.getJSONObject("result").getJSONObject("location");
-        String lat = location.getString("lat");
-        String lng = location.getString("lng");
-        //店铺经纬度坐标
-        String shopLngLat = lat + "," + lng;
+        String shopLngLat = getLngLat(map, MessageConstant.SHOP_ADDRESS_FAILED);
 
         map.put("address", address);
         //获取用户收货地址的经纬度坐标
-        String userCoordinate = HttpClientUtil.doGet("https://api.map.baidu.com/geocoding/v3", map);
-        jsonObject = JSON.parseObject(userCoordinate);
-        if (!jsonObject.getString("status").equals("0")) {
-            throw new MapException(MessageConstant.USER_ADDRESS_FAILED);
-        }
-        //数据解析
-        location = jsonObject.getJSONObject("result").getJSONObject("location");
-        lat = location.getString("lat");
-        lng = location.getString("lng");
-        //用户收货地址经纬度坐标
-        String userLngLat = lat + "," + lng;
+        String userLngLat = getLngLat(map, MessageConstant.USER_ADDRESS_FAILED);
 
         map.put("origin", shopLngLat);
         map.put("destination", userLngLat);
         map.put("steps_info", "0");
         //路线规划
         String json = HttpClientUtil.doGet("https://api.map.baidu.com/directionlite/v1/driving", map);
-        jsonObject = JSON.parseObject(json);
+        JSONObject jsonObject = JSON.parseObject(json);
         if (!jsonObject.getString("status").equals("0")) {
             throw new MapException(MessageConstant.DELIVERY_ROUTING_FAILED);
         }
