@@ -1,7 +1,6 @@
 package com.sky.service.impl;
 
 import com.alibaba.fastjson.JSON;
-import com.alibaba.fastjson.JSONArray;
 import com.alibaba.fastjson.JSONObject;
 import com.github.pagehelper.Page;
 import com.github.pagehelper.PageHelper;
@@ -17,7 +16,7 @@ import com.sky.mapper.*;
 import com.sky.result.PageResult;
 import com.sky.service.OrderService;
 import com.sky.service.ShopService;
-import com.sky.utils.HttpClientUtil;
+import com.sky.utils.BaiduMapUtil;
 import com.sky.utils.WeChatPayUtil;
 import com.sky.vo.OrderPaymentVO;
 import com.sky.vo.OrderStatisticsVO;
@@ -27,7 +26,6 @@ import com.sky.websocket.WebSocketServer;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.util.CollectionUtils;
@@ -39,11 +37,6 @@ import java.util.stream.Collectors;
 @Service
 @Slf4j
 public class OrderServiceImpl implements OrderService {
-
-    @Value("${sky.shop.address}")
-    private String shopAddress;// todo 把商家信息存储在redis或mysql中方便修改，而不是写在yml配置文件，添加查询与修改商家信息的接口
-    @Value("${sky.baidu.ak}")
-    private String ak;
 
     @Autowired
     private OrderMapper orderMapper;
@@ -58,68 +51,11 @@ public class OrderServiceImpl implements OrderService {
     @Autowired
     private ShopService shopService;
     @Autowired
+    private BaiduMapUtil baiduMapUtil;
+    @Autowired
     private UserMapper userMapper;
     @Autowired
     private WeChatPayUtil weChatPayUtil;
-
-    /**
-     * 检查用户的收货地址是否超出配送范围
-     *
-     * @param address    用户收货地址
-     * @param kilometers 配送范围（单位：千米）
-     */
-    private void checkOutOfRange(String address, Double kilometers) {
-        Map<String, String> map = new HashMap<>();
-        map.put("address", shopAddress);
-        map.put("output", "json");
-        map.put("ak", ak);
-
-        //获取店铺的经纬度坐标
-        String shopCoordinate = HttpClientUtil.doGet("https://api.map.baidu.com/geocoding/v3", map);
-        JSONObject jsonObject = JSON.parseObject(shopCoordinate);
-        if (!jsonObject.getString("status").equals("0")) {
-            throw new OrderBusinessException(MessageConstant.SHOP_ADDRESS_FAILED);
-        }
-        //数据解析
-        JSONObject location = jsonObject.getJSONObject("result").getJSONObject("location");
-        String lat = location.getString("lat");
-        String lng = location.getString("lng");
-        //店铺经纬度坐标
-        String shopLngLat = lat + "," + lng;
-
-        map.put("address", address);
-        //获取用户收货地址的经纬度坐标
-        String userCoordinate = HttpClientUtil.doGet("https://api.map.baidu.com/geocoding/v3", map);
-        jsonObject = JSON.parseObject(userCoordinate);
-        if (!jsonObject.getString("status").equals("0")) {
-            throw new OrderBusinessException(MessageConstant.USER_ADDRESS_FAILED);
-        }
-        //数据解析
-        location = jsonObject.getJSONObject("result").getJSONObject("location");
-        lat = location.getString("lat");
-        lng = location.getString("lng");
-        //用户收货地址经纬度坐标
-        String userLngLat = lat + "," + lng;
-
-        map.put("origin", shopLngLat);
-        map.put("destination", userLngLat);
-        map.put("steps_info", "0");
-        //路线规划
-        String json = HttpClientUtil.doGet("https://api.map.baidu.com/directionlite/v1/driving", map);
-        jsonObject = JSON.parseObject(json);
-        if (!jsonObject.getString("status").equals("0")) {
-            throw new OrderBusinessException(MessageConstant.DELIVERY_ROUTING_FAILED);
-        }
-        //数据解析
-        JSONObject result = jsonObject.getJSONObject("result");
-        JSONArray jsonArray = (JSONArray) result.get("routes");
-        Integer distance = (Integer) ((JSONObject) jsonArray.get(0)).get("distance");
-
-        //判断是否超出配送范围
-        if (distance > kilometers * 1000) {//超出配送距离（单位：米）
-            throw new OrderBusinessException(MessageConstant.USER_ADDRESS_OUT_OF_RANGE);// todo 小程序端捕获超出配送范围的异常信息并推送
-        }
-    }
 
     /**
      * 根据订单id获取菜品信息字符串
@@ -375,8 +311,12 @@ public class OrderServiceImpl implements OrderService {
         }
 
         //检查用户收货地址是否超出配送范围（单位：千米）
-        Double range = 1000.0;// todo 在redis或mysql设置配送范围以便修改，添加查询与修改配送范围的接口
-        checkOutOfRange(addressBook.getCityName() + addressBook.getDistrictName() + addressBook.getDetail(), range);
+        int range = 1000;// todo 在redis或mysql设置配送范围以便修改，添加查询与修改配送范围的接口
+        Integer distance = baiduMapUtil.getDistance(addressBook.getCityName() + addressBook.getDistrictName() + addressBook.getDetail());
+        //判断是否超出配送范围
+        if (distance > range * 1000) {//超出配送距离（单位：米）
+            throw new OrderBusinessException(MessageConstant.USER_ADDRESS_OUT_OF_RANGE);// todo 小程序端捕获超出配送范围的异常信息并推送
+        }
 
         //向订单表插入1条数据
         Orders orders = new Orders();
