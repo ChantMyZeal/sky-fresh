@@ -31,7 +31,7 @@ public class AddressBookController {
     public Result<List<AddressBook>> list() {
         log.info("查询当前登录用户的所有地址信息");
         AddressBook addressBook = new AddressBook();
-        addressBook.setUserId(BaseContext.getCurrentId());//todo 放到service层中实现
+        addressBook.setUserId(BaseContext.getCurrentId());
         List<AddressBook> list = addressBookService.list(addressBook);
         return Result.success(list);
     }

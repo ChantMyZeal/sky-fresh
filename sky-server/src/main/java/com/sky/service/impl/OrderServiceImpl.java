@@ -39,7 +39,7 @@ import java.util.stream.Collectors;
 public class OrderServiceImpl implements OrderService {
 
     @Value("${sky.shop.address}")
-    private String shopAddress;// todo 把商家信息存储在redis或mysql中方便修改，而不是写在yml配置文件
+    private String shopAddress;// todo 把商家信息存储在redis或mysql中方便修改，而不是写在yml配置文件，添加查询与修改商家信息的接口
     @Value("${sky.baidu.ak}")
     private String ak;
 
@@ -359,7 +359,7 @@ public class OrderServiceImpl implements OrderService {
         }
 
         //检查用户收货地址是否超出配送范围（单位：千米）
-        Double range = 1000.0;// todo 在redis或mysql设置配送范围以便修改
+        Double range = 1000.0;// todo 在redis或mysql设置配送范围以便修改，添加查询与修改配送范围的接口
         checkOutOfRange(addressBook.getCityName() + addressBook.getDistrictName() + addressBook.getDetail(), range);
 
         Long userId = BaseContext.getCurrentId();
