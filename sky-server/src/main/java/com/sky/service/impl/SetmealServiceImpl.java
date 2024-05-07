@@ -20,6 +20,8 @@ import com.sky.vo.SetmealVO;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.cache.annotation.CacheEvict;
+import org.springframework.cache.annotation.Cacheable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -187,6 +189,7 @@ public class SetmealServiceImpl implements SetmealService {
      * @return 返回套餐实体对象集合
      */
     @Override
+    @Cacheable(cacheNames = "setmealCache", key = "#setmeal.getCategoryId()")//key: setmealCache::{categoryId}
     public List<Setmeal> list(Setmeal setmeal) {
         return setmealMapper.list(setmeal);
     }
@@ -208,6 +211,7 @@ public class SetmealServiceImpl implements SetmealService {
      * @param id     套餐ID
      */
     @Override
+    @CacheEvict(cacheNames = "setmealCache", allEntries = true)//清除缓存
     public void startOrStop(Integer status, Long id) {
         //启售套餐时，判断套餐内是否有停售菜品，有停售菜品提示"套餐内包含未启售菜品，无法启售"
         if (Objects.equals(status, StatusConstant.ENABLE)) {

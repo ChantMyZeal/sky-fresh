@@ -20,6 +20,8 @@ import com.sky.vo.DishVO;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.cache.annotation.CacheEvict;
+import org.springframework.cache.annotation.Cacheable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -208,6 +210,7 @@ public class DishServiceImpl implements DishService {
      * @return 返回菜品VO集合
      */
     @Override
+    @Cacheable(cacheNames = "dishCache", key = "#dish.getCategoryId()")//key: dishCache::{categoryId}
     public List<DishVO> listWithFlavor(Dish dish) {
         List<Dish> dishList = dishMapper.list(dish);
 
@@ -235,6 +238,7 @@ public class DishServiceImpl implements DishService {
      */
     @Override
     @Transactional
+    @CacheEvict(cacheNames = {"dishCache", "setmealCache"}, allEntries = true)//也要清除套餐的缓存
     public void startOrStop(Integer status, Long id) {
         Dish dish = Dish.builder()
                 .status(status)

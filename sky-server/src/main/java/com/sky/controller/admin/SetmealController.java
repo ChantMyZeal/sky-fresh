@@ -10,7 +10,6 @@ import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.cache.annotation.CacheEvict;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
@@ -106,7 +105,7 @@ public class SetmealController {
      */
     @PostMapping("/status/{status}")
     @Operation(summary = "启售或停售套餐")
-    @CacheEvict(cacheNames = "setmealCache", allEntries = true)
+    //@CacheEvict(cacheNames = "setmealCache", allEntries = true) 缓存注解已移动到service层实现
     public Result<String> startOrStop(@PathVariable Integer status, Long id) {
         log.info("启售或停售套餐：{},{}", status, id);
         setmealService.startOrStop(status, id);
