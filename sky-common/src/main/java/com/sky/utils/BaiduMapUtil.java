@@ -4,6 +4,7 @@ import com.alibaba.fastjson.JSON;
 import com.alibaba.fastjson.JSONArray;
 import com.alibaba.fastjson.JSONObject;
 import com.sky.constant.MessageConstant;
+import com.sky.entity.DeliveryPath;
 import com.sky.exception.MapException;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Value;
@@ -48,23 +49,28 @@ public class BaiduMapUtil {
     }
 
     /**
-     * 检查用户的收货地址是否超出配送范围
+     * 查询店铺的经纬度坐标
      *
-     * @param address 用户收货地址
-     * @return 返回店铺地址与用户收货地址之间的距离（单位：米）
+     * @return 返回坐标
      */
-    public Integer getDistance(String address) {
+    public String getShopLngLat() {
         Map<String, String> map = new HashMap<>();
+        map.put("ak", ak);
         map.put("address", shopAddress);
         map.put("output", "json");
+        return getLngLat(map, MessageConstant.SHOP_ADDRESS_FAILED);
+    }
+
+    /**
+     * 根据两地经纬度查询运输距离和运输时间
+     *
+     * @param shopLngLat 店铺地址经纬度
+     * @param userLngLat 用户收货地址经纬度
+     * @return 返回运输路径实体对象
+     */
+    public DeliveryPath getPath(String shopLngLat, String userLngLat) {
+        Map<String, String> map = new HashMap<>();
         map.put("ak", ak);
-        //获取店铺的经纬度坐标
-        String shopLngLat = getLngLat(map, MessageConstant.SHOP_ADDRESS_FAILED);
-
-        map.put("address", address);
-        //获取用户收货地址的经纬度坐标
-        String userLngLat = getLngLat(map, MessageConstant.USER_ADDRESS_FAILED);
-
         map.put("origin", shopLngLat);
         map.put("destination", userLngLat);
         map.put("steps_info", "0");
@@ -77,7 +83,46 @@ public class BaiduMapUtil {
         //数据解析
         JSONObject result = jsonObject.getJSONObject("result");
         JSONArray jsonArray = (JSONArray) result.get("routes");
-        return (Integer) ((JSONObject) jsonArray.get(0)).get("distance");
+        Integer distance = (Integer) ((JSONObject) jsonArray.get(0)).get("distance");
+        Integer duration = (Integer) ((JSONObject) jsonArray.get(0)).get("duration");
+
+        return DeliveryPath.builder()
+                .distance(distance)
+                .duration(duration)
+                .build();
+    }
+
+    /**
+     * 查询店铺地址与用户收货地址之间的运输距离和运输时间
+     *
+     * @param userAddress 用户收货地址
+     * @return 返回运输路径实体对象
+     */
+    public DeliveryPath getPathByUserAddress(String userAddress) {
+        //获取店铺的经纬度坐标
+        String shopLngLat = getShopLngLat();
+
+        Map<String, String> map = new HashMap<>();
+        map.put("ak", ak);
+        map.put("address", userAddress);
+        map.put("output", "json");
+        //获取用户收货地址的经纬度坐标
+        String userLngLat = getLngLat(map, MessageConstant.USER_ADDRESS_FAILED);
+
+        return getPath(shopLngLat, userLngLat);
+    }
+
+    /**
+     * 查询店铺地址与用户收货地址经纬度之间的运输距离和运输时间
+     *
+     * @param userLngLat 用户收货地址经纬度
+     * @return 返回运输路径实体对象
+     */
+    public DeliveryPath getPathByUserLngLat(String userLngLat) {
+        //获取店铺的经纬度坐标
+        String shopLngLat = getShopLngLat();
+
+        return getPath(shopLngLat, userLngLat);
     }
 
 }

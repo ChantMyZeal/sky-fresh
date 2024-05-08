@@ -7,6 +7,8 @@ import com.sky.vo.OrderStatisticsVO;
 import com.sky.vo.OrderSubmitVO;
 import com.sky.vo.OrderVO;
 
+import java.time.LocalDateTime;
+
 public interface OrderService {
 
     /**
@@ -123,5 +125,13 @@ public interface OrderService {
      * @param id 订单ID
      */
     void reminder(Long id);
+
+    /**
+     * 预估送达时间
+     *
+     * @param userAddress 用户收货地址
+     * @return 返回时间
+     */
+    LocalDateTime estimateDeliveryTime(String userAddress);
 
 }

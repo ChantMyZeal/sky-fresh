@@ -312,7 +312,7 @@ public class OrderServiceImpl implements OrderService {
 
         //检查用户收货地址是否超出配送范围（单位：千米）
         int range = 1000;// todo 在redis或mysql设置配送范围以便修改，添加查询与修改配送范围的接口
-        Integer distance = baiduMapUtil.getDistance(addressBook.getCityName() + addressBook.getDistrictName() + addressBook.getDetail());
+        Integer distance = baiduMapUtil.getPathByUserAddress(addressBook.getCityName() + addressBook.getDistrictName() + addressBook.getDetail()).getDistance();
         //判断是否超出配送范围
         if (distance > range * 1000) {//超出配送距离（单位：米）
             throw new OrderBusinessException(MessageConstant.USER_ADDRESS_OUT_OF_RANGE);// todo 小程序端捕获超出配送范围的异常信息并推送
@@ -564,6 +564,18 @@ public class OrderServiceImpl implements OrderService {
         map.put("orderId", ordersDB.getId());
         map.put("content", "订单号：" + ordersDB.getNumber());
         webSocketServer.sendToAllClient(JSON.toJSONString(map));
+    }
+
+    /**
+     * 预估送达时间
+     *
+     * @param userAddress 用户收货地址
+     * @return 返回时间
+     */
+    @Override
+    public LocalDateTime estimateDeliveryTime(String userAddress) {
+        Integer duration = baiduMapUtil.getPathByUserAddress(userAddress).getDuration();
+        return LocalDateTime.now().plusSeconds(duration);
     }
 
 }

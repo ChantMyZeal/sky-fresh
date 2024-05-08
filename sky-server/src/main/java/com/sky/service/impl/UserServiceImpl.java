@@ -12,6 +12,7 @@ import com.sky.mapper.UserMapper;
 import com.sky.properties.JwtProperties;
 import com.sky.properties.WeChatProperties;
 import com.sky.service.UserService;
+import com.sky.utils.BaiduMapUtil;
 import com.sky.utils.HttpClientUtil;
 import com.sky.utils.JwtUtil;
 import com.sky.vo.UserLoginVO;
@@ -19,6 +20,8 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import java.math.BigDecimal;
+import java.math.RoundingMode;
 import java.time.LocalDateTime;
 import java.util.HashMap;
 import java.util.Map;
@@ -35,6 +38,8 @@ public class UserServiceImpl implements UserService {
     private JwtProperties jwtProperties;
     @Autowired
     private UserMapper userMapper;
+    @Autowired
+    private BaiduMapUtil baiduMapUtil;
 
     /**
      * 调用微信接口服务，获取微信用户的openid
@@ -86,11 +91,19 @@ public class UserServiceImpl implements UserService {
         claims.put(JwtClaimsConstant.USER_ID, user.getId());
         String token = JwtUtil.createJWT(jwtProperties.getUserSecretKey(), jwtProperties.getUserTtl(), claims);
 
+        BigDecimal deliveryFee = BigDecimal.valueOf(6);
+        String location = userLoginDTO.getLocation();
+        if (location != null) {
+            Integer distance = baiduMapUtil.getPathByUserLngLat(location).getDistance();
+            deliveryFee = BigDecimal.valueOf(distance).divide(BigDecimal.valueOf(5000), 2, RoundingMode.HALF_UP);//todo 分离出设置配送费的模块
+        }
+
         //返回这个用户对象
         return UserLoginVO.builder()
                 .id(user.getId())
                 .openid(user.getOpenid())
                 .token(token)
+                .deliveryFee(deliveryFee)
                 .build();
     }
 

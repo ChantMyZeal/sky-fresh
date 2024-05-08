@@ -14,6 +14,8 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 
+import java.time.LocalDateTime;
+
 @RestController("userOrderController")
 @RequestMapping("/user/order")
 @Tag(name = "C端-订单相关接口")
@@ -123,6 +125,19 @@ public class OrderController {
         log.info("用户催单，订单ID：{}", id);
         orderService.reminder(id);
         return Result.success();
+    }
+
+    /**
+     * 查询预估送达时间
+     *
+     * @param customerAddress 用户收货地址
+     * @return 返回时间
+     */
+    @GetMapping("/getEstimatedDeliveryTime")
+    @Operation(summary = "查询预估送达时间")
+    public Result<LocalDateTime> getEstimatedDeliveryTime(String customerAddress) {
+        log.info("查询预估送达时间，用户收货地址：{}", customerAddress);
+        return Result.success(orderService.estimateDeliveryTime(customerAddress));
     }
 
 }
