@@ -5,6 +5,7 @@ import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
+import java.io.Serial;
 import java.io.Serializable;
 import java.math.BigDecimal;
 import java.time.LocalDateTime;
@@ -35,6 +36,7 @@ public class Orders implements Serializable {
     public static final Integer PAID = 1;
     public static final Integer REFUND = 2;
 
+    @Serial
     private static final long serialVersionUID = 1L;
 
     private Long id;
@@ -100,11 +102,15 @@ public class Orders implements Serializable {
     private LocalDateTime deliveryTime;
 
     //打包费
-    private int packAmount;
+    private BigDecimal packAmount;
+
+    //配送费
+    private BigDecimal deliveryFee;
 
     //餐具数量
     private int tablewareNumber;
 
     //餐具数量状态  1按餐量提供  0选择具体数量
     private Integer tablewareStatus;
+
 }
