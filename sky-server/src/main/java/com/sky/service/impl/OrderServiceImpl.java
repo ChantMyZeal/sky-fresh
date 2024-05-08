@@ -18,10 +18,7 @@ import com.sky.service.OrderService;
 import com.sky.service.ShopService;
 import com.sky.utils.BaiduMapUtil;
 import com.sky.utils.WeChatPayUtil;
-import com.sky.vo.OrderPaymentVO;
-import com.sky.vo.OrderStatisticsVO;
-import com.sky.vo.OrderSubmitVO;
-import com.sky.vo.OrderVO;
+import com.sky.vo.*;
 import com.sky.websocket.WebSocketServer;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.BeanUtils;
@@ -30,6 +27,8 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.util.CollectionUtils;
 
+import java.math.BigDecimal;
+import java.math.RoundingMode;
 import java.time.LocalDateTime;
 import java.util.*;
 import java.util.stream.Collectors;
@@ -567,15 +566,26 @@ public class OrderServiceImpl implements OrderService {
     }
 
     /**
-     * 预估送达时间
+     * 查询配送费和预估送达时间
      *
      * @param userAddress 用户收货地址
-     * @return 返回时间
+     * @return 返回快递信息VO
      */
     @Override
-    public LocalDateTime estimateDeliveryTime(String userAddress) {
+    public DeliveryVO getDeliveryFeeAndTime(String userAddress) {
         Integer duration = baiduMapUtil.getPathByUserAddress(userAddress).getDuration();
-        return LocalDateTime.now().plusSeconds(duration);
+        LocalDateTime time = LocalDateTime.now().plusSeconds(duration);
+
+        BigDecimal fee = BigDecimal.valueOf(6);
+        if (userAddress != null && !userAddress.isEmpty()) {
+            Integer distance = baiduMapUtil.getPathByUserAddress(userAddress).getDistance();
+            fee = BigDecimal.valueOf(distance).divide(BigDecimal.valueOf(5000), 2, RoundingMode.HALF_UP);//todo 分离出设置配送费的模块
+        }
+
+        return DeliveryVO.builder()
+                .time(time)
+                .fee(fee)
+                .build();
     }
 
 }

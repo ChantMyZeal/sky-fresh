@@ -31,7 +31,7 @@ public class UserController {
     @PostMapping("/login")
     @Operation(summary = "微信登录")
     public Result<UserLoginVO> login(@RequestBody UserLoginDTO userLoginDTO) {
-        log.info("微信用户登录，授权码：{}，定位：{}", userLoginDTO.getCode(), userLoginDTO.getLocation());
+        log.info("微信用户登录，授权码：{}", userLoginDTO.getCode());
         UserLoginVO userLoginVO = userService.wxLogin(userLoginDTO);
         return Result.success(userLoginVO);
     }

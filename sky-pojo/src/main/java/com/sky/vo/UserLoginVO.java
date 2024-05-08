@@ -6,7 +6,6 @@ import lombok.Data;
 import lombok.NoArgsConstructor;
 
 import java.io.Serializable;
-import java.math.BigDecimal;
 
 @Data
 @Builder
@@ -17,6 +16,6 @@ public class UserLoginVO implements Serializable {
     private Long id;
     private String openid;
     private String token;
-    private BigDecimal deliveryFee;
+    //private BigDecimal deliveryFee;
 
 }

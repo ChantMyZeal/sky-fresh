@@ -5,6 +5,7 @@ import com.sky.dto.OrdersSubmitDTO;
 import com.sky.result.PageResult;
 import com.sky.result.Result;
 import com.sky.service.OrderService;
+import com.sky.vo.DeliveryVO;
 import com.sky.vo.OrderPaymentVO;
 import com.sky.vo.OrderSubmitVO;
 import com.sky.vo.OrderVO;
@@ -13,8 +14,6 @@ import io.swagger.v3.oas.annotations.tags.Tag;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
-
-import java.time.LocalDateTime;
 
 @RestController("userOrderController")
 @RequestMapping("/user/order")
@@ -128,16 +127,16 @@ public class OrderController {
     }
 
     /**
-     * 查询预估送达时间
+     * 查询配送费和预估送达时间
      *
      * @param customerAddress 用户收货地址
-     * @return 返回时间
+     * @return 返回快递信息VO
      */
-    @GetMapping("/getEstimatedDeliveryTime")
-    @Operation(summary = "查询预估送达时间")
-    public Result<LocalDateTime> getEstimatedDeliveryTime(String customerAddress) {
-        log.info("查询预估送达时间，用户收货地址：{}", customerAddress);
-        return Result.success(orderService.estimateDeliveryTime(customerAddress));
+    @GetMapping("/getDeliveryFeeAndTime")
+    @Operation(summary = "查询配送费和预估送达时间")
+    public Result<DeliveryVO> getDeliveryFeeAndTime(String customerAddress) {
+        log.info("查询配送费和预估送达时间，用户收货地址：{}", customerAddress);
+        return Result.success(orderService.getDeliveryFeeAndTime(customerAddress));
     }
 
 }
