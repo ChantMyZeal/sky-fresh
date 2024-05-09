@@ -240,7 +240,7 @@ public class OrderServiceImpl implements OrderService {
      * @param id 订单ID
      */
     @Override
-    public void delivery(Long id) {
+    public void delivery(Long id) {//todo 可以考虑派送时输入骑手电话传到前端
         // 根据id查询订单
         Orders ordersDB = orderMapper.getById(id);
 

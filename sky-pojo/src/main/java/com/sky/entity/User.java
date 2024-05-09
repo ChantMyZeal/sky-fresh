@@ -5,8 +5,8 @@ import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
+import java.io.Serial;
 import java.io.Serializable;
-import java.time.LocalDate;
 import java.time.LocalDateTime;
 
 @Data
@@ -15,6 +15,7 @@ import java.time.LocalDateTime;
 @AllArgsConstructor
 public class User implements Serializable {
 
+    @Serial
     private static final long serialVersionUID = 1L;
 
     private Long id;
@@ -28,6 +29,9 @@ public class User implements Serializable {
     //手机号
     private String phone;
 
+    //密码
+    private String password;
+
     //性别 0 女 1 男
     private String sex;
 
@@ -39,4 +43,5 @@ public class User implements Serializable {
 
     //注册时间
     private LocalDateTime createTime;
+
 }

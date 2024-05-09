@@ -11,6 +11,8 @@ import java.io.Serializable;
 public class UserLoginDTO implements Serializable {
 
     private String code;
+    private String phone;
+    private String password;
     //private String location;
 
 }

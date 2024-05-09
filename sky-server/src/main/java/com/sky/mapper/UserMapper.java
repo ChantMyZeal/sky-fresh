@@ -43,4 +43,13 @@ public interface UserMapper {
      */
     Integer countByTimeRange(LocalDateTime begin, LocalDateTime end);
 
+    /**
+     * 根据用户电话号码查询用户数据
+     *
+     * @param phone 用户电话号码
+     * @return 返回用户实体对象
+     */
+    @Select("select * from user where phone = #{phone}")
+    User getByPhone(String phone);
+
 }

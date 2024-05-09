@@ -23,16 +23,16 @@ public class UserController {
     private UserService userService;
 
     /**
-     * 微信登录
+     * 用户登录
      *
      * @param userLoginDTO 用户登录DTO
      * @return 返回统一响应结果
      */
     @PostMapping("/login")
-    @Operation(summary = "微信登录")
+    @Operation(summary = "用户登录")
     public Result<UserLoginVO> login(@RequestBody UserLoginDTO userLoginDTO) {
-        log.info("微信用户登录，授权码：{}", userLoginDTO.getCode());
-        UserLoginVO userLoginVO = userService.wxLogin(userLoginDTO);
+        log.info("用户登录，授权码：{}，手机号：{}", userLoginDTO.getCode(), userLoginDTO.getPhone());
+        UserLoginVO userLoginVO = userService.login(userLoginDTO);
         return Result.success(userLoginVO);
     }
 
@@ -46,6 +46,20 @@ public class UserController {
     public Result<String> logout() {
         log.info("用户退出...");
         userService.logout();
+        return Result.success();
+    }
+
+    /**
+     * 用户注册
+     *
+     * @param userLoginDTO 用户登录DTO
+     * @return 返回统一响应结果
+     */
+    @PostMapping("/register")
+    @Operation(summary = "用户注册")
+    public Result<String> register(@RequestBody UserLoginDTO userLoginDTO) {
+        log.info("用户注册，手机号：{}", userLoginDTO.getPhone());
+        userService.register(userLoginDTO);
         return Result.success();
     }
 

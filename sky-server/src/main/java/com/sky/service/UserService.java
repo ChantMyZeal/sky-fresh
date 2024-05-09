@@ -11,11 +11,18 @@ public interface UserService {
      * @param userLoginDTO 用户登录DTO
      * @return 返回用户登录VO
      */
-    UserLoginVO wxLogin(UserLoginDTO userLoginDTO);
+    UserLoginVO login(UserLoginDTO userLoginDTO);
 
     /**
      * 退出登录
      */
     void logout();
+
+    /**
+     * 用户注册
+     *
+     * @param userLoginDTO 用户登录DTO
+     */
+    void register(UserLoginDTO userLoginDTO);
 
 }
