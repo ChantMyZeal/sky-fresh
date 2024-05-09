@@ -3,6 +3,7 @@ package com.sky.controller.user;
 import com.sky.constant.StatusConstant;
 import com.sky.result.Result;
 import com.sky.service.ShopService;
+import com.sky.vo.ShopInfoVO;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import lombok.extern.slf4j.Slf4j;
@@ -31,6 +32,19 @@ public class ShopController {
         Integer status = shopService.getStatus();
         log.info("获取到店铺的营业状态：{}", Objects.equals(status, StatusConstant.ENABLE) ? "营业中" : "打烊中");
         return Result.success(status);
+    }
+
+    /**
+     * 获取店铺信息
+     *
+     * @return 返回店铺信息VO
+     */
+    @GetMapping("/info")
+    @Operation(summary = "获取店铺信息")
+    public Result<ShopInfoVO> getInfo() {
+        ShopInfoVO shopInfoVO = shopService.getInfo();
+        log.info("获取到店铺的信息：{}", shopInfoVO);
+        return Result.success(shopInfoVO);
     }
 
 }

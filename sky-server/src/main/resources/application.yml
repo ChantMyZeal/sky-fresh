@@ -57,7 +57,11 @@ logging:
 
 sky:
   shop:
-    address: 广州市番禺区大学城外环东路382号 #商家地址
+    name: 天外飞鲜 #店铺名称
+    phone: 13712345678 #店铺电话
+    address: 广州市番禺区大学城外环东路382号 #店铺地址
+    intro: 天外飞鲜，生鲜快送（学生创业项目，仅模拟下单） #店铺简介
+    fee-rule: 0.2元/公里 #配送费规则
   jwt:
     # 设置jwt签名加密时使用的秘钥
     admin-secret-key: skytakeout

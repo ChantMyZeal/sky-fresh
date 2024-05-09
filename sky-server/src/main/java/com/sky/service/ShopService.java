@@ -1,5 +1,7 @@
 package com.sky.service;
 
+import com.sky.vo.ShopInfoVO;
+
 public interface ShopService {
 
     /**
@@ -15,5 +17,12 @@ public interface ShopService {
      * @return 返回状态参数
      */
     Integer getStatus();
+
+    /**
+     * 获取店铺信息
+     *
+     * @return 返回店铺信息VO
+     */
+    ShopInfoVO getInfo();
 
 }
