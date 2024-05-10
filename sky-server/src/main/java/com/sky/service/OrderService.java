@@ -84,12 +84,13 @@ public interface OrderService {
     /**
      * 用户端订单分页查询
      *
-     * @param pageNum  分页数量
-     * @param pageSize 分页大小
-     * @param status   订单状态 1待付款 2待接单 3已接单 4派送中 5已完成 6已取消
+     * @param pageNum   分页数量
+     * @param pageSize  分页大小
+     * @param status    订单状态 1待付款 2待接单 3已接单 4派送中 5已完成 6已取消
+     * @param payStatus 支付状态 0未支付 1已支付 2已退款
      * @return 返回分页结果
      */
-    PageResult pageQuery4User(int pageNum, int pageSize, Integer status);
+    PageResult pageQuery4User(int pageNum, int pageSize, Integer status, Integer payStatus);
 
     /**
      * 查询订单详情

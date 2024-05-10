@@ -44,7 +44,7 @@ public class Orders implements Serializable {
     //订单号
     private String number;
 
-    //订单状态 1待付款 2待接单 3已接单 4派送中 5已完成 6已取消 7退款
+    //订单状态 1待付款 2待接单 3已接单 4派送中 5已完成 6已取消
     private Integer status;
 
     //下单用户id
@@ -62,7 +62,7 @@ public class Orders implements Serializable {
     //支付方式 1微信，2支付宝
     private Integer payMethod;
 
-    //支付状态 0未支付 1已支付 2退款
+    //支付状态 0未支付 1已支付 2已退款
     private Integer payStatus;
 
     //实收金额

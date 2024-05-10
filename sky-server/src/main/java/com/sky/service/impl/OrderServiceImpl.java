@@ -411,19 +411,22 @@ public class OrderServiceImpl implements OrderService {
     /**
      * 用户端订单分页查询
      *
-     * @param pageNum  分页数量
-     * @param pageSize 分页大小
-     * @param status   订单状态 1待付款 2待接单 3已接单 4派送中 5已完成 6已取消
+     * @param pageNum   分页数量
+     * @param pageSize  分页大小
+     * @param status    订单状态 1待付款 2待接单 3已接单 4派送中 5已完成 6已取消
+     * @param payStatus 支付状态 0未支付 1已支付 2已退款
      * @return 返回分页结果
      */
     @Override
-    public PageResult pageQuery4User(int pageNum, int pageSize, Integer status) {
+    public PageResult pageQuery4User(int pageNum, int pageSize, Integer status, Integer payStatus) {
         // 设置分页
         PageHelper.startPage(pageNum, pageSize);
 
         OrdersPageQueryDTO ordersPageQueryDTO = new OrdersPageQueryDTO();
         ordersPageQueryDTO.setUserId(BaseContext.getCurrentId());
-        ordersPageQueryDTO.setStatus(status);
+
+        if (status != null) ordersPageQueryDTO.setStatus(status);
+        if (payStatus != null) ordersPageQueryDTO.setPayStatus(payStatus);
 
         // 分页条件查询
         Page<Orders> page = orderMapper.pageQuery(ordersPageQueryDTO);

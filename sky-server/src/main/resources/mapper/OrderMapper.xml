@@ -62,6 +62,9 @@
             <if test="status != null">
                 and status = #{status}
             </if>
+            <if test="payStatus != null">
+                and pay_status = #{payStatus}
+            </if>
             <if test="beginTime != null">
                 and order_time &gt;= #{beginTime}
             </if>

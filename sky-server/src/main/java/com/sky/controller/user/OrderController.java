@@ -56,16 +56,17 @@ public class OrderController {
     /**
      * 历史订单查询
      *
-     * @param page     分页数量
-     * @param pageSize 分页大小
-     * @param status   订单状态 1待付款 2待接单 3已接单 4派送中 5已完成 6已取消
+     * @param page      分页数量
+     * @param pageSize  分页大小
+     * @param status    订单状态 1待付款 2待接单 3已接单 4派送中 5已完成 6已取消
+     * @param payStatus 支付状态 0未支付 1已支付 2已退款
      * @return 返回统一响应结果
      */
     @GetMapping("/historyOrders")
     @Operation(summary = "历史订单查询")
-    public Result<PageResult> page(int page, int pageSize, Integer status) {
-        log.info("历史订单查询，page={},pageSize={},status={}", page, pageSize, status);
-        PageResult pageResult = orderService.pageQuery4User(page, pageSize, status);
+    public Result<PageResult> page(int page, int pageSize, Integer status, Integer payStatus) {
+        log.info("历史订单查询，page={},pageSize={},status={},payStatus={}", page, pageSize, status, payStatus);
+        PageResult pageResult = orderService.pageQuery4User(page, pageSize, status, payStatus);
         return Result.success(pageResult);
     }
 
