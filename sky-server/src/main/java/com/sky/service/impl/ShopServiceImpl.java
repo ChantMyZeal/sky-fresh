@@ -48,6 +48,7 @@ public class ShopServiceImpl implements ShopService {
                 .shopPhone((String) redisTemplate.opsForHash().get(KEY, "shopPhone"))
                 .shopAddress((String) redisTemplate.opsForHash().get(KEY, "shopAddress"))
                 .shopIntro((String) redisTemplate.opsForHash().get(KEY, "shopIntro"))
+                .packageFeePerItem((BigDecimal) redisTemplate.opsForHash().get(KEY, "packageFeePerItem"))
                 .deliveryFeePerKm((BigDecimal) redisTemplate.opsForHash().get(KEY, "deliveryFeePerKm"))
                 .build();
     }
@@ -64,6 +65,7 @@ public class ShopServiceImpl implements ShopService {
         map.put("shopPhone", shopInfo.getShopPhone());
         map.put("shopAddress", shopInfo.getShopAddress());
         map.put("shopIntro", shopInfo.getShopIntro());
+        map.put("packageFeePerItem", shopInfo.getPackageFeePerItem());
         map.put("deliveryFeePerKm", shopInfo.getDeliveryFeePerKm());
         redisTemplate.opsForHash().putAll(KEY, map);
     }
