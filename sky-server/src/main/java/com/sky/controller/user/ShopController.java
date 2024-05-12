@@ -3,7 +3,7 @@ package com.sky.controller.user;
 import com.sky.constant.StatusConstant;
 import com.sky.result.Result;
 import com.sky.service.ShopService;
-import com.sky.vo.ShopInfoVO;
+import com.sky.entity.ShopInfo;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import lombok.extern.slf4j.Slf4j;
@@ -37,14 +37,14 @@ public class ShopController {
     /**
      * 获取店铺信息
      *
-     * @return 返回店铺信息VO
+     * @return 返回店铺信息实体对象
      */
     @GetMapping("/info")
     @Operation(summary = "获取店铺信息")
-    public Result<ShopInfoVO> getInfo() {
-        ShopInfoVO shopInfoVO = shopService.getInfo();
-        log.info("获取到店铺的信息：{}", shopInfoVO);
-        return Result.success(shopInfoVO);
+    public Result<ShopInfo> getInfo() {
+        ShopInfo shopInfo = shopService.getInfo();
+        log.info("获取到店铺的信息：{}", shopInfo);
+        return Result.success(shopInfo);
     }
 
 }

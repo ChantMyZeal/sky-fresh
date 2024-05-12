@@ -1,6 +1,6 @@
 package com.sky.service;
 
-import com.sky.vo.ShopInfoVO;
+import com.sky.entity.ShopInfo;
 
 public interface ShopService {
 
@@ -21,8 +21,15 @@ public interface ShopService {
     /**
      * 获取店铺信息
      *
-     * @return 返回店铺信息VO
+     * @return 返回店铺信息实体对象
      */
-    ShopInfoVO getInfo();
+    ShopInfo getInfo();
+
+    /**
+     * 设置店铺信息
+     *
+     * @param shopInfo 店铺信息实体对象
+     */
+    void setInfo(ShopInfo shopInfo);
 
 }

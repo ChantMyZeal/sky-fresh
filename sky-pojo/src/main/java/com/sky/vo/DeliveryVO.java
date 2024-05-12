@@ -15,7 +15,7 @@ import java.time.LocalDateTime;
 public class DeliveryVO {
 
     //配送费
-    private BigDecimal fee;
+    private BigDecimal deliveryFee;
     //预估配送时间
     private LocalDateTime time;
 

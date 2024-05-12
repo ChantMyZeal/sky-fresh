@@ -20,20 +20,23 @@ import java.util.Map;
 @Slf4j
 public class BaiduMapUtil {
 
-    @Value("${sky.shop.address}")
-    private String shopAddress;// todo 把商家信息存储在redis或mysql中方便修改，而不是写在yml配置文件，添加查询与修改商家信息的接口
     @Value("${sky.baidu.ak}")
     private String ak;
 
     /**
      * 根据地址信息查询经纬度坐标
      *
-     * @param map      查询参数
+     * @param address  地址
      * @param eMessage 抛出异常时显示的信息
      * @return 返回经纬度坐标
      * @throws MapException 抛出异常
      */
-    public String getLngLat(Map<String, String> map, String eMessage) throws MapException {
+    public String getLngLat(String address, String eMessage) throws MapException {
+        //构造查询参数
+        Map<String, String> map = new HashMap<>();
+        map.put("ak", ak);
+        map.put("address", address);
+        map.put("output", "json");
         //查询坐标
         String coordinate = HttpClientUtil.doGet("https://api.map.baidu.com/geocoding/v3", map);
         JSONObject jsonObject = JSON.parseObject(coordinate);
@@ -46,19 +49,6 @@ public class BaiduMapUtil {
         String lng = location.getString("lng");
         //返回结果
         return lat + "," + lng;
-    }
-
-    /**
-     * 查询店铺的经纬度坐标
-     *
-     * @return 返回坐标
-     */
-    public String getShopLngLat() {
-        Map<String, String> map = new HashMap<>();
-        map.put("ak", ak);
-        map.put("address", shopAddress);
-        map.put("output", "json");
-        return getLngLat(map, MessageConstant.SHOP_ADDRESS_FAILED);
     }
 
     /**
@@ -90,39 +80,6 @@ public class BaiduMapUtil {
                 .distance(distance)
                 .duration(duration)
                 .build();
-    }
-
-    /**
-     * 查询店铺地址与用户收货地址之间的运输距离和运输时间
-     *
-     * @param userAddress 用户收货地址
-     * @return 返回运输路径实体对象
-     */
-    public DeliveryPath getPathByUserAddress(String userAddress) {
-        //获取店铺的经纬度坐标
-        String shopLngLat = getShopLngLat();
-
-        Map<String, String> map = new HashMap<>();
-        map.put("ak", ak);
-        map.put("address", userAddress);
-        map.put("output", "json");
-        //获取用户收货地址的经纬度坐标
-        String userLngLat = getLngLat(map, MessageConstant.USER_ADDRESS_FAILED);
-
-        return getPath(shopLngLat, userLngLat);
-    }
-
-    /**
-     * 查询店铺地址与用户收货地址经纬度之间的运输距离和运输时间
-     *
-     * @param userLngLat 用户收货地址经纬度
-     * @return 返回运输路径实体对象
-     */
-    public DeliveryPath getPathByUserLngLat(String userLngLat) {
-        //获取店铺的经纬度坐标
-        String shopLngLat = getShopLngLat();
-
-        return getPath(shopLngLat, userLngLat);
     }
 
 }

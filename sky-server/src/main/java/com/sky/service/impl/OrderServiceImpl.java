@@ -23,6 +23,7 @@ import com.sky.websocket.WebSocketServer;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.util.CollectionUtils;
@@ -52,9 +53,12 @@ public class OrderServiceImpl implements OrderService {
     @Autowired
     private BaiduMapUtil baiduMapUtil;
     @Autowired
+    private RedisTemplate<String, Object> redisTemplate;
+    @Autowired
     private UserMapper userMapper;
     @Autowired
     private WeChatPayUtil weChatPayUtil;
+    public static final String KEY = "shopCache";
 
     /**
      * 根据订单id获取菜品信息字符串
@@ -311,7 +315,10 @@ public class OrderServiceImpl implements OrderService {
 
         //检查用户收货地址是否超出配送范围（单位：千米）
         int range = 1000;// todo 在redis或mysql设置配送范围以便修改，添加查询与修改配送范围的接口
-        Integer distance = baiduMapUtil.getPathByUserAddress(addressBook.getCityName() + addressBook.getDistrictName() + addressBook.getDetail()).getDistance();
+        String shopAddress = (String) redisTemplate.opsForHash().get(KEY, "shopAddress");
+        String shopLngLat = baiduMapUtil.getLngLat(shopAddress, MessageConstant.SHOP_ADDRESS_FAILED);
+        String userLngLat = baiduMapUtil.getLngLat(addressBook.getCityName() + addressBook.getDistrictName() + addressBook.getDetail(), MessageConstant.USER_ADDRESS_FAILED);
+        Integer distance = baiduMapUtil.getPath(shopLngLat, userLngLat).getDistance();
         //判断是否超出配送范围
         if (distance > range * 1000) {//超出配送距离（单位：米）
             throw new OrderBusinessException(MessageConstant.USER_ADDRESS_OUT_OF_RANGE);// todo 小程序端捕获超出配送范围的异常信息并推送
@@ -576,18 +583,31 @@ public class OrderServiceImpl implements OrderService {
      */
     @Override
     public DeliveryVO getDeliveryFeeAndTime(String userAddress) {
-        Integer duration = baiduMapUtil.getPathByUserAddress(userAddress).getDuration();
+        //处理双方地址与经纬度
+        String shopAddress = (String) redisTemplate.opsForHash().get(KEY, "shopAddress");
+        String shopLngLat = baiduMapUtil.getLngLat(shopAddress, MessageConstant.SHOP_ADDRESS_FAILED);
+        String userLngLat = baiduMapUtil.getLngLat(userAddress, MessageConstant.USER_ADDRESS_FAILED);
+        //查询配送路径
+        DeliveryPath path = baiduMapUtil.getPath(shopLngLat, userLngLat);
+        //通过路径对象获取预计到达时间
+        Integer duration = path.getDuration();
         LocalDateTime time = LocalDateTime.now().plusSeconds(duration);
 
-        BigDecimal fee = BigDecimal.valueOf(6);
+        BigDecimal deliveryFee = BigDecimal.valueOf(0);
         if (userAddress != null && !userAddress.isEmpty()) {
-            Integer distance = baiduMapUtil.getPathByUserAddress(userAddress).getDistance();
-            fee = BigDecimal.valueOf(distance).divide(BigDecimal.valueOf(5000), 2, RoundingMode.HALF_UP);//todo 分离出设置配送费的模块
+            //查询每公里配送费
+            BigDecimal deliveryFeePerKm = (BigDecimal) redisTemplate.opsForHash().get(KEY, "deliveryFeePerKm");
+            if (deliveryFeePerKm == null) deliveryFeePerKm = BigDecimal.valueOf(0);
+            // 通过路径对象获取配送距离并将单位转换为公里
+            BigDecimal distanceM = BigDecimal.valueOf(path.getDistance());
+            BigDecimal distanceKm = distanceM.divide(BigDecimal.valueOf(1000), 3, RoundingMode.HALF_UP);
+            //相乘计算配送费
+            deliveryFee = distanceKm.multiply(deliveryFeePerKm).setScale(2, RoundingMode.HALF_UP);
         }
 
         return DeliveryVO.builder()
                 .time(time)
-                .fee(fee)
+                .deliveryFee(deliveryFee)
                 .build();
     }
 
