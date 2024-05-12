@@ -33,12 +33,14 @@ public class AddressBookServiceImpl implements AddressBookService {
      * 新增地址
      *
      * @param addressBook 地址信息实体对象
+     * @return 返回插入后回显的地址ID
      */
     @Override
-    public void save(AddressBook addressBook) {
+    public Long save(AddressBook addressBook) {
         addressBook.setUserId(BaseContext.getCurrentId());
         addressBook.setIsDefault(0);
         addressBookMapper.insert(addressBook);
+        return addressBook.getId();
     }
 
     /**

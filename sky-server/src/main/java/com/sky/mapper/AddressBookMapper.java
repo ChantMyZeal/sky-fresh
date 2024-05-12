@@ -21,11 +21,6 @@ public interface AddressBookMapper {
      *
      * @param addressBook 地址信息实体对象
      */
-    @Insert("insert into address_book" +
-            "        (user_id, consignee, phone, sex, province_code, province_name, city_code, city_name, district_code," +
-            "         district_name, detail, label, is_default)" +
-            "        values (#{userId}, #{consignee}, #{phone}, #{sex}, #{provinceCode}, #{provinceName}, #{cityCode}, #{cityName}," +
-            "                #{districtCode}, #{districtName}, #{detail}, #{label}, #{isDefault})")
     void insert(AddressBook addressBook);
 
     /**

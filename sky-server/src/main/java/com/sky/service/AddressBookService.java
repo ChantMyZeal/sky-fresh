@@ -18,8 +18,9 @@ public interface AddressBookService {
      * 新增地址
      *
      * @param addressBook 地址信息实体对象
+     * @return 返回插入后回显的地址ID
      */
-    void save(AddressBook addressBook);
+    Long save(AddressBook addressBook);
 
     /**
      * 根据id查询

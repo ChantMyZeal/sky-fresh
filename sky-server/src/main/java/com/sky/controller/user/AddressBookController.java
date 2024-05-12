@@ -44,10 +44,9 @@ public class AddressBookController {
      */
     @PostMapping
     @Operation(summary = "新增地址")
-    public Result<String> save(@RequestBody AddressBook addressBook) {
+    public Result<Long> save(@RequestBody AddressBook addressBook) {
         log.info("新增地址：{}", addressBook);
-        addressBookService.save(addressBook);
-        return Result.success();
+        return Result.success(addressBookService.save(addressBook));
     }
 
     /**
