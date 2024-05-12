@@ -1,4 +1,4 @@
-package com.sky.vo;
+package com.sky.entity;
 
 import lombok.AllArgsConstructor;
 import lombok.Builder;
@@ -12,8 +12,10 @@ import java.time.LocalDateTime;
 @Builder
 @NoArgsConstructor
 @AllArgsConstructor
-public class DeliveryVO {
+public class DeliveryInfo {
 
+    //配送距离
+    private Double deliveryDistance;
     //配送费
     private BigDecimal deliveryFee;
     //预估配送时间

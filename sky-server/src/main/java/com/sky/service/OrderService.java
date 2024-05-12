@@ -1,6 +1,7 @@
 package com.sky.service;
 
 import com.sky.dto.*;
+import com.sky.entity.DeliveryInfo;
 import com.sky.result.PageResult;
 import com.sky.vo.*;
 
@@ -126,8 +127,8 @@ public interface OrderService {
      * 查询配送费和预估送达时间
      *
      * @param userAddress 用户收货地址
-     * @return 返回快递信息VO
+     * @return 返回快递信息实体对象
      */
-    DeliveryVO getDeliveryFeeAndTime(String userAddress);
+    DeliveryInfo getDeliveryFeeAndTime(String userAddress);
 
 }

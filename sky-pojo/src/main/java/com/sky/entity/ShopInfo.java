@@ -19,6 +19,7 @@ public class ShopInfo {
     private String shopIntro; // 店铺简介
     private BigDecimal packageFeePerItem; // 每件打包费
     private BigDecimal deliveryFeePerKm; // 每公里配送费
+    private Double deliveryRange; // 配送范围
     //private String shopId;
 
 }

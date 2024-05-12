@@ -579,17 +579,20 @@ public class OrderServiceImpl implements OrderService {
      * 查询配送费和预估送达时间
      *
      * @param userAddress 用户收货地址
-     * @return 返回快递信息VO
+     * @return 返回快递信息实体对象
      */
     @Override
-    public DeliveryVO getDeliveryFeeAndTime(String userAddress) {
+    public DeliveryInfo getDeliveryFeeAndTime(String userAddress) {
         //处理双方地址与经纬度
         String shopAddress = (String) redisTemplate.opsForHash().get(KEY, "shopAddress");
         String shopLngLat = baiduMapUtil.getLngLat(shopAddress, MessageConstant.SHOP_ADDRESS_FAILED);
         String userLngLat = baiduMapUtil.getLngLat(userAddress, MessageConstant.USER_ADDRESS_FAILED);
         //查询配送路径
         DeliveryPath path = baiduMapUtil.getPath(shopLngLat, userLngLat);
-        //通过路径对象获取预计到达时间
+        // 通过路径对象获取配送距离并将单位转换为公里
+        BigDecimal distanceM = BigDecimal.valueOf(path.getDistance());
+        BigDecimal distanceKm = distanceM.divide(BigDecimal.valueOf(1000), 3, RoundingMode.HALF_UP);
+        //通过路径对象获取配送时间并计算预计到达时间
         Integer duration = path.getDuration();
         LocalDateTime time = LocalDateTime.now().plusSeconds(duration);
 
@@ -598,16 +601,14 @@ public class OrderServiceImpl implements OrderService {
             //查询每公里配送费
             BigDecimal deliveryFeePerKm = (BigDecimal) redisTemplate.opsForHash().get(KEY, "deliveryFeePerKm");
             if (deliveryFeePerKm == null) deliveryFeePerKm = BigDecimal.valueOf(0);
-            // 通过路径对象获取配送距离并将单位转换为公里
-            BigDecimal distanceM = BigDecimal.valueOf(path.getDistance());
-            BigDecimal distanceKm = distanceM.divide(BigDecimal.valueOf(1000), 3, RoundingMode.HALF_UP);
-            //相乘计算配送费
+            //计算总配送费
             deliveryFee = distanceKm.multiply(deliveryFeePerKm).setScale(2, RoundingMode.HALF_UP);
         }
 
-        return DeliveryVO.builder()
-                .time(time)
+        return DeliveryInfo.builder()
+                .deliveryDistance(distanceKm.doubleValue())
                 .deliveryFee(deliveryFee)
+                .time(time)
                 .build();
     }
 
