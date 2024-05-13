@@ -295,6 +295,7 @@ public class OrderServiceImpl implements OrderService {
     @Transactional
     public OrderSubmitVO submitOrder(OrdersSubmitDTO ordersSubmitDTO) {
         //处理各种业务异常（店铺已打烊，地址簿为空，购物车为空）
+
         Integer status = shopService.getStatus();//查询店铺营业状态
         if (Objects.equals(status, StatusConstant.DISABLE)) {
             throw new OrderBusinessException(MessageConstant.SHOP_CLOSED);//抛出业务异常
@@ -311,17 +312,6 @@ public class OrderServiceImpl implements OrderService {
         AddressBook addressBook = addressBookMapper.getById(ordersSubmitDTO.getAddressBookId());//查询当前用户的地址簿数据
         if (addressBook == null) {
             throw new AddressBookBusinessException(MessageConstant.ADDRESS_BOOK_IS_NULL);//抛出业务异常
-        }
-
-        //检查用户收货地址是否超出配送范围（单位：千米）
-        int range = 1000;// todo 在redis或mysql设置配送范围以便修改，添加查询与修改配送范围的接口
-        String shopAddress = (String) redisTemplate.opsForHash().get(KEY, "shopAddress");
-        String shopLngLat = baiduMapUtil.getLngLat(shopAddress, MessageConstant.SHOP_ADDRESS_FAILED);
-        String userLngLat = baiduMapUtil.getLngLat(addressBook.getCityName() + addressBook.getDistrictName() + addressBook.getDetail(), MessageConstant.USER_ADDRESS_FAILED);
-        Integer distance = baiduMapUtil.getPath(shopLngLat, userLngLat).getDistance();
-        //判断是否超出配送范围
-        if (distance > range * 1000) {//超出配送距离（单位：米）
-            throw new OrderBusinessException(MessageConstant.USER_ADDRESS_OUT_OF_RANGE);// todo 小程序端捕获超出配送范围的异常信息并推送
         }
 
         //向订单表插入1条数据
@@ -576,13 +566,13 @@ public class OrderServiceImpl implements OrderService {
     }
 
     /**
-     * 查询配送费和预估送达时间
+     * 查询配送距离、配送费和预估送达时间
      *
      * @param userAddress 用户收货地址
      * @return 返回快递信息实体对象
      */
     @Override
-    public DeliveryInfo getDeliveryFeeAndTime(String userAddress) {
+    public DeliveryInfo getDeliveryInfo(String userAddress) {
         //处理双方地址与经纬度
         String shopAddress = (String) redisTemplate.opsForHash().get(KEY, "shopAddress");
         String shopLngLat = baiduMapUtil.getLngLat(shopAddress, MessageConstant.SHOP_ADDRESS_FAILED);

@@ -124,11 +124,11 @@ public interface OrderService {
     void reminder(Long id);
 
     /**
-     * 查询配送费和预估送达时间
+     * 查询配送距离、配送费和预估送达时间
      *
      * @param userAddress 用户收货地址
      * @return 返回快递信息实体对象
      */
-    DeliveryInfo getDeliveryFeeAndTime(String userAddress);
+    DeliveryInfo getDeliveryInfo(String userAddress);
 
 }

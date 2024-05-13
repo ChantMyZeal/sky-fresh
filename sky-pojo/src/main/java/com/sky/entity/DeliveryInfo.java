@@ -14,7 +14,7 @@ import java.time.LocalDateTime;
 @AllArgsConstructor
 public class DeliveryInfo {
 
-    //配送距离
+    //配送距离（单位：千米）
     private Double deliveryDistance;
     //配送费
     private BigDecimal deliveryFee;
