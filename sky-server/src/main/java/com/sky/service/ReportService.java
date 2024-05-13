@@ -50,7 +50,9 @@ public interface ReportService {
      * 导出运营数据报表
      *
      * @param response 输出流所需的响应对象
+     * @param begin    开始日期
+     * @param end      结束日期
      */
-    void exportBusinessData(HttpServletResponse response);
+    void exportBusinessData(HttpServletResponse response, LocalDate begin, LocalDate end);
 
 }

@@ -176,13 +176,12 @@ public class ReportServiceImpl implements ReportService {//todo 考虑在mysql�
      * 导出运营数据报表
      *
      * @param response 输出流所需的响应对象
+     * @param begin    开始日期
+     * @param end      结束日期
      */
     @Override
-    public void exportBusinessData(HttpServletResponse response) {
-        //1.查询数据库，获取最近30天内的营业数据
-        LocalDate beginDate = LocalDate.now().minusDays(30);
-        LocalDate endDate = LocalDate.now().minusDays(1);
-        BusinessDataVO businessData = workspaceService.getBusinessData(beginDate.atTime(LocalTime.MIN), endDate.atTime(LocalTime.MAX));
+    public void exportBusinessData(HttpServletResponse response, LocalDate begin, LocalDate end) {
+        BusinessDataVO businessData = workspaceService.getBusinessData(begin.atTime(LocalTime.MIN), end.atTime(LocalTime.MAX));
 
         //2.通过POI将数据写入到Excel文件中
         InputStream in = this.getClass().getClassLoader().getResourceAsStream("template/运营数据报表模板.xlsx");
@@ -190,7 +189,7 @@ public class ReportServiceImpl implements ReportService {//todo 考虑在mysql�
             assert in != null : "错误：找不到Excel模板";
             XSSFWorkbook excel = new XSSFWorkbook(in);//基于模板文件创建创建新的Excel文件
             XSSFSheet sheet = excel.getSheet("Sheet1");//获取标签页
-            sheet.getRow(1).getCell(1).setCellValue("时间：" + beginDate + "至" + endDate);//填充时间数据
+            sheet.getRow(1).getCell(1).setCellValue("时间：" + begin + "至" + end);//填充时间数据
             XSSFRow row = sheet.getRow(3);//获取第4行
             row.getCell(2).setCellValue(businessData.getTurnover());
             row.getCell(4).setCellValue(businessData.getOrderCompletionRate());
@@ -201,7 +200,7 @@ public class ReportServiceImpl implements ReportService {//todo 考虑在mysql�
 
             //填充明细数据
             for (int i = 0; i < 30; i++) {
-                LocalDate date = beginDate.plusDays(i);
+                LocalDate date = begin.plusDays(i);
                 businessData = workspaceService.getBusinessData(date.atTime(LocalTime.MIN), date.atTime(LocalTime.MAX));//查询某一天的营业数据
                 row = sheet.getRow(7 + i);//获得某一行
                 row.getCell(1).setCellValue(date.toString());

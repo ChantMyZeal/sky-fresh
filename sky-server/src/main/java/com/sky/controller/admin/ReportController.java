@@ -94,12 +94,16 @@ public class ReportController {
      * 导出运营数据报表
      *
      * @param response 输出流所需的响应对象
+     * @param begin    开始日期
+     * @param end      结束日期
      */
     @GetMapping("/export")
     @Operation(summary = "导出运营数据报表")
-    public void export(HttpServletResponse response) {
-        log.info("导出运营数据报表...");
-        reportService.exportBusinessData(response);
+    public void export(HttpServletResponse response,
+                       @DateTimeFormat(pattern = "yyyy-MM-dd") LocalDate begin,
+                       @DateTimeFormat(pattern = "yyyy-MM-dd") LocalDate end) {
+        log.info("导出运营数据报表，开始时间：{}，结束时间{}", begin, end);
+        reportService.exportBusinessData(response, begin, end);
     }
 
 }
