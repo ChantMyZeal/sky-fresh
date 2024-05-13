@@ -148,7 +148,9 @@
         </if>
         group by od.name
         order by total desc
-        limit #{limit}
+        <if test="limit != null">
+            limit #{limit}
+        </if>
     </select>
 
 </mapper>

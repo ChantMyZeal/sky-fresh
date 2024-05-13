@@ -3,7 +3,7 @@ package com.sky.controller.admin;
 import com.sky.result.Result;
 import com.sky.service.ReportService;
 import com.sky.vo.OrderReportVO;
-import com.sky.vo.SalesTop10ReportVO;
+import com.sky.vo.SalesTopReportVO;
 import com.sky.vo.TurnoverReportVO;
 import com.sky.vo.UserReportVO;
 import io.swagger.v3.oas.annotations.Operation;
@@ -76,18 +76,19 @@ public class ReportController {
     }
 
     /**
-     * 销量排名前十商品
+     * 销量排名前列商品
      *
      * @param begin 开始日期
      * @param end   结束日期
+     * @param limit 排名范围
      * @return 返回统一响应结果
      */
-    @GetMapping("/top10")
-    @Operation(summary = "销量排名前十商品")
-    public Result<SalesTop10ReportVO> top10(@DateTimeFormat(pattern = "yyyy-MM-dd") LocalDate begin,
-                                            @DateTimeFormat(pattern = "yyyy-MM-dd") LocalDate end) {
-        log.info("销量排名前十商品：从{}到{}", begin, end);
-        return Result.success(reportService.getSalesTop10(begin, end));
+    @GetMapping("/top")
+    @Operation(summary = "销量排名前列商品")
+    public Result<SalesTopReportVO> topSales(@DateTimeFormat(pattern = "yyyy-MM-dd") LocalDate begin,
+                                             @DateTimeFormat(pattern = "yyyy-MM-dd") LocalDate end, Integer limit) {
+        log.info("销量排名前{}商品：从{}到{}", limit, begin, end);
+        return Result.success(reportService.getSalesTop(begin, end, limit));
     }
 
     /**
@@ -102,7 +103,7 @@ public class ReportController {
     public void export(HttpServletResponse response,
                        @DateTimeFormat(pattern = "yyyy-MM-dd") LocalDate begin,
                        @DateTimeFormat(pattern = "yyyy-MM-dd") LocalDate end) {
-        log.info("导出运营数据报表，开始时间：{}，结束时间{}", begin, end);
+        log.info("导出运营数据报表：从{}到{}", begin, end);
         reportService.exportBusinessData(response, begin, end);
     }
 

@@ -149,14 +149,15 @@ public class ReportServiceImpl implements ReportService {//todo 考虑在mysql�
      *
      * @param begin 开始日期
      * @param end   结束日期
+     * @param limit 排名范围
      * @return 返回销量前十报告VO
      */
     @Override
-    public SalesTop10ReportVO getSalesTop10(LocalDate begin, LocalDate end) {
+    public SalesTopReportVO getSalesTop(LocalDate begin, LocalDate end, Integer limit) {
         //构造开始时间和结束时间，调用Mapper查询数据库
         LocalDateTime beginTime = LocalDateTime.of(begin, LocalTime.MIN);
         LocalDateTime endTime = LocalDateTime.of(end, LocalTime.MAX);
-        List<GoodsSalesDTO> salesTop10 = orderMapper.getSalesTop(beginTime, endTime, 10, Orders.COMPLETED);
+        List<GoodsSalesDTO> salesTop10 = orderMapper.getSalesTop(beginTime, endTime, limit, Orders.COMPLETED);
 
         //将查询得到的结果转换为需要返回的格式
         List<String> names = salesTop10.stream().map(GoodsSalesDTO::getName).toList();
@@ -165,7 +166,7 @@ public class ReportServiceImpl implements ReportService {//todo 考虑在mysql�
         String numberList = StringUtils.join(numbers, ",");
 
         //封装结果数据
-        return SalesTop10ReportVO
+        return SalesTopReportVO
                 .builder()
                 .nameList(nameList)
                 .numberList(numberList)

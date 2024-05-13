@@ -1,7 +1,7 @@
 package com.sky.service;
 
 import com.sky.vo.OrderReportVO;
-import com.sky.vo.SalesTop10ReportVO;
+import com.sky.vo.SalesTopReportVO;
 import com.sky.vo.TurnoverReportVO;
 import com.sky.vo.UserReportVO;
 import jakarta.servlet.http.HttpServletResponse;
@@ -42,9 +42,10 @@ public interface ReportService {
      *
      * @param begin 开始日期
      * @param end   结束日期
+     * @param limit 排名范围
      * @return 返回销量前十报告VO
      */
-    SalesTop10ReportVO getSalesTop10(LocalDate begin, LocalDate end);
+    SalesTopReportVO getSalesTop(LocalDate begin, LocalDate end, Integer limit);
 
     /**
      * 导出运营数据报表
