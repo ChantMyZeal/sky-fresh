@@ -110,7 +110,7 @@ public class SetmealServiceImpl implements SetmealService {
         Long enabledSetmealCount = setmealMapper.getCountByIdsAndStatus(ids, StatusConstant.ENABLE);
         if (enabledSetmealCount > 0) {
             //有套餐起售中，不能删除
-            throw new DeletionNotAllowedException(MessageConstant.SETMEAL_ON_SALE);
+            throw new DeletionNotAllowedException(MessageConstant.SETMEAL_ON_SALE_CANNOT_DELETE);
         }
         /*ids.forEach(id -> {
             Setmeal setmeal = setmealMapper.getById(id);
@@ -164,7 +164,7 @@ public class SetmealServiceImpl implements SetmealService {
         Long enabledSetmealCount = setmealMapper.getCountByIdsAndStatus(Collections.singletonList(setmealId), StatusConstant.ENABLE);
         if (enabledSetmealCount > 0) {
             //套餐起售中，不能修改
-            throw new DeletionNotAllowedException(MessageConstant.SETMEAL_ON_SALE);
+            throw new DeletionNotAllowedException(MessageConstant.SETMEAL_ON_SALE_CANNOT_UPDATE);
         }
 
         //修改套餐基本信息

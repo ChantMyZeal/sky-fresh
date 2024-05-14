@@ -109,7 +109,7 @@ public class DishServiceImpl implements DishService {
         Long enabledDishCount = dishMapper.countByIdsAndStatus(ids, StatusConstant.ENABLE);
         if (enabledDishCount > 0) {
             //有菜品起售中，不能删除
-            throw new DeletionNotAllowedException(MessageConstant.DISH_ON_SALE);
+            throw new DeletionNotAllowedException(MessageConstant.DISH_ON_SALE_CANNOT_DELETE);
         }
         /*for (Long id : ids) {
             Dish dish = dishMapper.getById(id);
@@ -173,7 +173,7 @@ public class DishServiceImpl implements DishService {
         Long enabledDishCount = dishMapper.countByIdsAndStatus(Collections.singletonList(dishId), StatusConstant.ENABLE);
         if (enabledDishCount > 0) {
             //菜品起售中，不能修改
-            throw new DeletionNotAllowedException(MessageConstant.DISH_ON_SALE);
+            throw new DeletionNotAllowedException(MessageConstant.DISH_ON_SALE_CANNOT_UPDATE);
         }
 
         //修改菜品基本信息

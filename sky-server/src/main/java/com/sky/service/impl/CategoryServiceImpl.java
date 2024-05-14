@@ -77,6 +77,11 @@ public class CategoryServiceImpl implements CategoryService {
      */
     @Override
     public void deleteById(Long id) {
+        //查询当前分类是否已启用，如果启用了就抛出业务异常
+        if (categoryMapper.getStatusById(id) > 0) {
+            throw new DeletionNotAllowedException(MessageConstant.CATEGORY_ON_USE_CANNOT_DELETE);
+        }
+
         //查询当前分类是否关联了菜品，如果关联了就抛出业务异常
         Integer count = dishMapper.countByCategoryIdAndStatus(id, null);
         if (count > 0) {
@@ -102,6 +107,11 @@ public class CategoryServiceImpl implements CategoryService {
      */
     @Override
     public void update(CategoryDTO categoryDTO) {
+        //查询当前分类是否已启用，如果启用了就抛出业务异常
+        if (categoryMapper.getStatusById(categoryDTO.getId()) > 0) {
+            throw new DeletionNotAllowedException(MessageConstant.CATEGORY_ON_USE_CANNOT_UPDATE);
+        }
+
         Category category = new Category();
         BeanUtils.copyProperties(categoryDTO, category);
 

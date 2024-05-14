@@ -90,7 +90,7 @@ public class SetmealController {
      */
     @PutMapping
     @Operation(summary = "修改套餐")
-    public Result<String> update(@RequestBody SetmealDTO setmealDTO) {// todo 前端增加接受error异常提示：启售中的套餐不能删除或修改
+    public Result<String> update(@RequestBody SetmealDTO setmealDTO) {
         log.info("修改套餐：{}", setmealDTO);
         setmealService.update(setmealDTO);
         return Result.success();
