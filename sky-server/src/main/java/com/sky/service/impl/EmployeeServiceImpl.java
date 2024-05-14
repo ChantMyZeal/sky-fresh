@@ -218,4 +218,25 @@ public class EmployeeServiceImpl implements EmployeeService {
         employeeMapper.update(employee);
     }
 
+    /**
+     * 删除员工信息
+     *
+     * @param id 员工ID
+     */
+    @Override
+    public void delete(Long id) {
+        //鉴权，只有管理员才能操作，且不能删除自己
+        Long currentId = BaseContext.getCurrentId();
+        if (currentId != 1 || currentId.equals(id)) {
+            throw new AuthenticationException(MessageConstant.NO_AUTHORITY);
+        }
+
+        //查询员工状态，启用中的员工不能删除
+        if (employeeMapper.getStatusById(id) > 0) {
+            throw new DeletionNotAllowedException(MessageConstant.EMPLOYEE_ENABLED_CANNOT_DELETE);
+        }
+
+        employeeMapper.delete(id);
+    }
+
 }

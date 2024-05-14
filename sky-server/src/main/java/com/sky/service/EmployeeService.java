@@ -68,4 +68,11 @@ public interface EmployeeService {
      */
     void update(EmployeeDTO employeeDTO);
 
+    /**
+     * 删除员工信息
+     *
+     * @param id 员工ID
+     */
+    void delete(Long id);
+
 }

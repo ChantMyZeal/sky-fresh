@@ -5,6 +5,7 @@ import com.sky.annotation.AutoFill;
 import com.sky.dto.EmployeePageQueryDTO;
 import com.sky.entity.Employee;
 import com.sky.enumeration.OperationType;
+import org.apache.ibatis.annotations.Delete;
 import org.apache.ibatis.annotations.Insert;
 import org.apache.ibatis.annotations.Mapper;
 import org.apache.ibatis.annotations.Select;
@@ -55,5 +56,22 @@ public interface EmployeeMapper {
      */
     @Select("select * from employee where id = #{id}")
     Employee getById(Long id);
+
+    /**
+     * 根据ID删除员工信息
+     *
+     * @param id 员工ID
+     */
+    @Delete("delete from employee where id = #{id}")
+    void delete(Long id);
+
+    /**
+     * 根据ID查询员工状态
+     *
+     * @param id 员工ID
+     * @return 返回员工状态
+     */
+    @Select("select status from employee where id = #{id}")
+    Integer getStatusById(Long id);
 
 }

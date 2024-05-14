@@ -121,7 +121,7 @@ public class EmployeeController {
     @GetMapping("/{id}")
     @Operation(summary = "根据ID查询员工信息")
     public Result<Employee> getById(@PathVariable Long id) {
-        log.info("根据ID查询员工信息，ID:{}", id);
+        log.info("根据ID查询员工信息，ID：{}", id);
         Employee employee = employeeService.getById(id);
         return Result.success(employee);
     }
@@ -137,6 +137,20 @@ public class EmployeeController {
     public Result<String> update(@RequestBody EmployeeDTO employeeDTO) {
         log.info("编辑员工信息：{}", employeeDTO);
         employeeService.update(employeeDTO);
+        return Result.success();
+    }
+
+    /**
+     * 删除员工信息
+     *
+     * @param id 员工ID
+     * @return 返回统一响应结果
+     */
+    @DeleteMapping("/delete")
+    @Operation(summary = "删除员工信息")
+    public Result<String> delete(Long id) {
+        log.info("删除员工信息，ID：{}", id);
+        employeeService.delete(id);
         return Result.success();
     }
 

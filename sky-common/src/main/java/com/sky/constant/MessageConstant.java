@@ -9,7 +9,8 @@ public class MessageConstant {
     public static final String ACCOUNT_NOT_FOUND = "账号不存在，请重新输入或联系管理员";
     public static final String ACCOUNT_ALREADY_EXISTS = "账号已存在";
     public static final String ACCOUNT_LOCKED = "账号被锁定";
-    public static final String NO_AUTHORITY = "非管理员，没有操作权限";
+    public static final String NO_AUTHORITY = "没有操作权限";
+    public static final String EMPLOYEE_ENABLED_CANNOT_DELETE = "启用中的员工不能删除";
     public static final String ALREADY_EXISTS = "已存在";
     public static final String UNKNOWN_ERROR = "未知错误";
     public static final String USER_NOT_LOGIN = "用户未登录";
