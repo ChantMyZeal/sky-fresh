@@ -133,8 +133,8 @@ public class OrderController {
      * @param customerAddress 用户收货地址
      * @return 返回快递信息实体对象
      */
-    @GetMapping("/getDeliveryFeeAndTime")
-    @Operation(summary = "查询配送费和预估送达时间")
+    @GetMapping("/getDeliveryInfo")
+    @Operation(summary = "查询配送距离、配送费和预估送达时间")
     public Result<DeliveryInfo> getDeliveryInfo(String customerAddress) {
         log.info("查询配送距离、配送费和预估送达时间，收货地址：{}", customerAddress);
         return Result.success(orderService.getDeliveryInfo(customerAddress));
