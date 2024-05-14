@@ -12,10 +12,7 @@ import com.sky.dto.EmployeeLoginDTO;
 import com.sky.dto.EmployeePageQueryDTO;
 import com.sky.dto.PasswordEditDTO;
 import com.sky.entity.Employee;
-import com.sky.exception.AccountLockedException;
-import com.sky.exception.AccountNotFoundException;
-import com.sky.exception.PasswordEditFailedException;
-import com.sky.exception.PasswordErrorException;
+import com.sky.exception.*;
 import com.sky.mapper.EmployeeMapper;
 import com.sky.properties.JwtProperties;
 import com.sky.result.PageResult;
@@ -129,10 +126,12 @@ public class EmployeeServiceImpl implements EmployeeService {
      */
     @Override
     public void save(EmployeeDTO employeeDTO) {
+        //鉴权，只有管理员才能操作
+        if (BaseContext.getCurrentId() != 1) {
+            throw new AuthenticationException(MessageConstant.NO_AUTHORITY);
+        }
 
-        //System.out.println("当前线程的ID："+Thread.currentThread().getId());
         Employee employee = new Employee();
-
         //对象属性拷贝
         BeanUtils.copyProperties(employeeDTO, employee);
         //设置帐号状态，默认正常 1正常0锁定
@@ -145,7 +144,6 @@ public class EmployeeServiceImpl implements EmployeeService {
         //employee.setCreateUser(BaseContext.getCurrentId());employee.setUpdateUser(BaseContext.getCurrentId());
 
         employeeMapper.insert(employee);
-
     }
 
     /**
@@ -172,9 +170,11 @@ public class EmployeeServiceImpl implements EmployeeService {
      */
     @Override
     public void startOrStop(Integer status, Long id) {
-        /*Employee employee = new Employee();
-        employee.setStatus(status);
-        employee.setId(id);*/
+        //鉴权，只有管理员才能操作
+        if (BaseContext.getCurrentId() != 1) {
+            throw new AuthenticationException(MessageConstant.NO_AUTHORITY);
+        }
+
         Employee employee = Employee.builder()
                 .status(status)
                 .id(id)
@@ -202,6 +202,11 @@ public class EmployeeServiceImpl implements EmployeeService {
      */
     @Override
     public void update(EmployeeDTO employeeDTO) {
+        //鉴权，只有管理员才能操作
+        if (BaseContext.getCurrentId() != 1) {
+            throw new AuthenticationException(MessageConstant.NO_AUTHORITY);
+        }
+
         Employee employee = new Employee();
         //对象属性拷贝
         BeanUtils.copyProperties(employeeDTO, employee);
