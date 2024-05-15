@@ -3,7 +3,8 @@ server:
 
 spring:
   profiles:
-    active: dev #prod
+    active: dev
+#    active: prod
   main:
     allow-circular-references: true
   datasource:
