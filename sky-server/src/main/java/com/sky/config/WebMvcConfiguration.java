@@ -63,9 +63,9 @@ public class WebMvcConfiguration implements WebMvcConfigurer {
         return new OpenAPI()
                 //.servers(serverList())
                 .info(new Info()
-                        .title("苍穹外卖项目接口文档")
+                        .title("天外飞鲜项目接口文档")
                         //.extensions(Map.of("x-audience", "external-partner", "x-application-id", "APP-12345"))
-                        .description("苍穹外卖项目接口文档")
+                        .description("天外飞鲜项目接口文档")
                         .version("1.0")
                 );
         //.addSecurityItem(new SecurityRequirement().addList("bearer-jwt", Arrays.asList("read", "write"))).security(securityList());
