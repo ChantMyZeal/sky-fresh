@@ -199,11 +199,17 @@ public class ReportServiceImpl implements ReportService {//todo 考虑在mysql�
             row.getCell(2).setCellValue(businessData.getValidOrderCount());
             row.getCell(4).setCellValue(businessData.getUnitPrice());
 
+            LocalDate date = begin;
             //填充明细数据
-            for (int i = 0; i < 30; i++) {
-                LocalDate date = begin.plusDays(i);
+            for (int i = 0; !date.isAfter(end); date = date.plusDays(1), i++) {//todo 上线版本未更改，需重新打包部署
                 businessData = workspaceService.getBusinessData(date.atTime(LocalTime.MIN), date.atTime(LocalTime.MAX));//查询某一天的营业数据
                 row = sheet.getRow(7 + i);//获得某一行
+                if (row == null) {
+                    row = sheet.createRow(7 + i);
+                    for (int j = 1; j <= 6; j++) {
+                        row.createCell(j);
+                    }
+                }
                 row.getCell(1).setCellValue(date.toString());
                 row.getCell(2).setCellValue(businessData.getTurnover());
                 row.getCell(3).setCellValue(businessData.getValidOrderCount());
